@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07111f"><title>Amazon Algorithms Cram Sheet</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="cheatsheet.css"></head><body>
+<div class="top"><div class="topin"><a class="pill" href="index.html">Lessons</a><a class="pill" href="practice.html">Mixed practice</a><a class="pill" href="code.html">Code reflexes</a><span class="pill active">Cram sheet</span></div></div>
+<main class="wrap"><section class="hero"><div class="eyebrow">Amazon Applied Scientist · last-minute review</div><h1>Recognize the smell. State the invariant. Avoid the bug.</h1><p>This is the dense page to reread right before the interview. Every abbreviation is expanded once; the goal is retrieval, not teaching from scratch.</p></section>
+
+<section class="cheatSection"><h2>0. What to do when the problem appears</h2><ol class="flow"><li><b>Restate the input/output.</b> Ask about constraints and ambiguous edge cases.</li><li><b>Say the simple solution first.</b> It proves you understand the problem even if it is slow.</li><li><b>Name the repeated expensive operation.</b> “I keep searching earlier values,” “I recompute every substring,” “I sort far more candidates than I need.”</li><li><b>Choose the structure that makes that operation cheap.</b></li><li><b>State one invariant.</b> This is more useful than reciting an algorithm name.</li><li><b>Say time and space complexity.</b> Then code.</li><li><b>Dry-run one normal case and one dangerous edge case.</b></li></ol></section>
+
+<section class="cheatSection"><h2>1. Pattern trigger map</h2><div class="patternGrid">
+<div class="patternCard hot"><h3>Hash map / set</h3><p><b>Smell:</b> seen before, duplicate, count, frequency, pair/match by value or ID.</p><p><b>Thought:</b> What repeated lookup can I make approximately constant time?</p><p><b>Invariant:</b> the dictionary/set summarizes everything useful from the processed prefix.</p><p class="danger"><b>Bug:</b> when self-match is illegal, often <em>check before insert</em>.</p></div>
+<div class="patternCard hot"><h3>Breadth-first search (BFS)</h3><p><b>Smell:</b> fewest steps/hops in an unweighted graph; explore level by level.</p><p><b>State:</b> queue + seen set.</p><p><b>Invariant:</b> queued nodes are already marked seen; queue order follows nondecreasing hop distance.</p><p class="danger"><b>Bug:</b> mark seen when enqueueing, not later when dequeueing.</p></div>
+<div class="patternCard hot"><h3>Depth-first search (DFS)</h3><p><b>Smell:</b> visit everything reachable, connected components, recursive tree/graph exploration.</p><p><b>State:</b> recursion stack or explicit stack + seen.</p><p><b>Question:</b> do I need shortest distance? If yes, plain DFS is usually not it.</p></div>
+<div class="patternCard job"><h3>Union-Find / Disjoint Set Union</h3><p><b>Smell:</b> repeated merges, “same group?”, transitive identity: A=B and B=C.</p><p><b>Operations:</b> <code>find(x)</code> representative; <code>union(a,b)</code> merge.</p><p><b>Invariant:</b> items with the same representative are in the same component.</p><p class="danger"><b>Know:</b> path compression; union by size/rank is the usual partner optimization.</p></div>
+<div class="patternCard job"><h3>Topological sort</h3><p><b>Smell:</b> prerequisites, dependencies, legal order, detect dependency cycle.</p><p><b>State:</b> adjacency list + indegree = unmet prerequisite count + queue.</p><p><b>Invariant:</b> queue contains only nodes legal to process now (indegree zero).</p><p class="danger"><b>Cycle:</b> processed fewer than all nodes.</p></div>
+<div class="patternCard job"><h3>Heap / Top K</h3><p><b>Smell:</b> best K, nearest K, highest K from huge stream; K ≪ n.</p><p><b>Thought:</b> do not fully sort losers I will discard.</p><p><b>Invariant:</b> size-K heap contains the best K candidates seen so far.</p><p class="danger"><b>For K largest:</b> min-heap root = weakest winner.</p></div>
+<div class="patternCard"><h3>Sliding window</h3><p><b>Smell:</b> contiguous range, longest/shortest substring/subarray, validity can be repaired by moving left forward.</p><p><b>Invariant:</b> current [left,right] window satisfies the rule.</p><p><b>Mechanic:</b> expand right; while invalid, shrink left.</p><p class="danger"><b>Warning:</b> arbitrary negative numbers often destroy simple sum-window monotonicity.</p></div>
+<div class="patternCard"><h3>Prefix sum + dictionary</h3><p><b>Smell:</b> exact contiguous subarray sum/count, especially with positive and negative numbers.</p><p><b>Equation:</b> currentPrefix − oldPrefix = K ⇒ oldPrefix = currentPrefix − K.</p><p><b>Invariant:</b> map contains prefix sums strictly before the current position.</p><p class="danger"><b>Bugs:</b> seed <code>{0:1}</code>; query before incrementing current prefix count.</p></div>
+<div class="patternCard"><h3>Binary search on the answer</h3><p><b>Smell:</b> smallest/largest value that makes a feasibility check pass.</p><p><b>Shape:</b> false false false | true true true.</p><p><b>Thought:</b> binary-search possible answers, not necessarily an input array.</p><p class="danger"><b>Boundary:</b> if <code>mid</code> works and may be the first working answer, keep it: often <code>hi = mid</code>.</p></div>
+<div class="patternCard job"><h3>Dijkstra shortest path</h3><p><b>Smell:</b> minimum total cost/distance with different <em>nonnegative</em> edge weights.</p><p><b>State:</b> best distance per node + min-heap of candidate distances.</p><p><b>Invariant:</b> heap exposes the smallest tentative total distance.</p><p class="danger"><b>Python trick:</b> push improved entries again; skip stale pops with <code>if d != dist[u]: continue</code>.</p></div>
+<div class="patternCard"><h3>Sort + sweep / two pointers</h3><p><b>Smell:</b> intervals, pair relations, “would ordering make interactions local?”</p><p><b>Thought:</b> pay O(n log n) once so the rest becomes a linear scan.</p><p><b>Two pointers:</b> often one or both indices only move forward/inward.</p></div>
+<div class="patternCard"><h3>Trees + recursion</h3><p><b>Smell:</b> hierarchical structure, subtree property, aggregate child information.</p><p><b>Question:</b> if each child already solved its subtree, what exactly must it return to its parent?</p><p class="danger"><b>Always define:</b> recursive contract + base case before writing the body.</p></div>
+<div class="patternCard"><h3>Dynamic programming (DP)</h3><p><b>Smell:</b> choices create the same smaller subproblem repeatedly.</p><p><b>Start:</b> define the state completely, recurrence, and base case.</p><p><b>Fast interview path:</b> top-down recursion + memoization (<code>@cache</code>) is often easiest to derive.</p></div>
+</div></section>
+
+<section class="cheatSection"><h2>2. The confusions that matter</h2><div class="compareGrid">
+<div><b>BFS vs Dijkstra</b><br>Every move costs the same → BFS. Different nonnegative costs → Dijkstra.</div>
+<div><b>DFS/BFS vs Union-Find</b><br>One/few static traversals → graph search is simple. Repeated merges / connectivity queries over time → Union-Find shines.</div>
+<div><b>Sliding window vs prefix sum map</b><br>Window validity changes predictably as boundaries move → window. Exact sums with arbitrary negatives → prefix sum + map is often the clue.</div>
+<div><b>Full sort vs heap</b><br>Need global ordering → sort. Need only best K with K small → heap.</div>
+<div><b>Ordinary binary search vs binary search on answer</b><br>You are allowed to search any ordered/monotonic candidate space, not only a sorted input array.</div>
+</div></section>
+
+<section class="cheatSection"><h2>3. Python primitives you should not hesitate over</h2>
+<details open><summary>Dictionary / set</summary><div class="code"><pre>seen = set()
+seen.add(x)
+if x in seen: ...
+
+counts = {}
+counts[x] = counts.get(x, 0) + 1</pre></div></details>
+<details><summary>Queue for breadth-first search</summary><div class="code"><pre>from collections import deque
+q = deque([start])
+u = q.popleft()
+q.append(v)</pre></div></details>
+<details><summary>Heap</summary><div class="code"><pre>import heapq
+heapq.heappush(h, x)
+x = heapq.heappop(h)
+
+# priority + payload
+heapq.heappush(h, (distance, node))</pre></div></details>
+<details><summary>Memoized recursion</summary><div class="code"><pre>from functools import cache
+
+@cache
+def solve(state):
+    if base_case: ...
+    return ...</pre></div></details>
+</section>
+
+<section class="cheatSection"><h2>4. Complexity: enough to speak clearly</h2><div class="complexity">
+<div><b>O(1)</b><span>roughly constant: dictionary/set lookup on average</span></div>
+<div><b>O(log n)</b><span>repeatedly cut possibilities in half; one heap operation</span></div>
+<div><b>O(n)</b><span>one pass over all input</span></div>
+<div><b>O(n log n)</b><span>typical comparison sort; often perfectly good</span></div>
+<div><b>O(n²)</b><span>all pairs / nested full scans; suspicious when n is large</span></div>
+</div><p class="why"><b>Interview habit:</b> say what operation causes the complexity. “I visit every node and edge once,” or “each of n candidates costs log K heap maintenance,” is stronger than reciting a symbol.</p></section>
+
+<section class="cheatSection"><h2>5. Dangerous edge cases</h2><div class="edgeList"><span>empty input</span><span>single item</span><span>duplicates</span><span>start = goal</span><span>disconnected graph</span><span>cycle</span><span>no solution</span><span>multiple valid answers</span><span>negative values</span><span>K = 0 / K > n</span></div><p class="why">Do not mechanically list all of these. Name the two or three that could actually break your algorithm or change the interpretation.</p></section>
+
+<section class="cheatSection jobBox"><h2>6. For this Amazon role, overlearn these five</h2><ol><li><b>Graphs:</b> related items, traversal, components, shortest hops.</li><li><b>Union-Find:</b> product/listing identity and transitive grouping.</li><li><b>Heap / Top K:</b> candidate retrieval and keeping a shortlist at scale.</li><li><b>Topological sort:</b> dependencies and cycle detection.</li><li><b>Dijkstra:</b> weighted relationship/path cost when edge costs differ.</li></ol><p>Then be solid on hashing, sliding windows/prefix sums, binary search, sorting, and basic tree recursion.</p></section>
+
+<div class="actions footerActions"><a class="btn primary" href="practice.html">Test recognition</a><a class="btn" href="code.html">Test code reflexes</a><a class="btn" href="index.html">Back to lessons</a></div>
+</main></body></html>
