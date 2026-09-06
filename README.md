@@ -13,9 +13,15 @@ Courses live beneath subject folders. Company-, role-, exam-, or situation-speci
 └── leetcode/
     ├── index.html
     └── amazon/
-        ├── index.html
-        ├── style.css
+        ├── index.html          # guided lessons
+        ├── practice.html       # mixed/adaptive recognition
+        ├── code.html           # tiny implementation-reflex drills
         ├── app.js
+        ├── practice.js
+        ├── code.js
+        ├── style.css
+        ├── practice.css
+        ├── code.css
         ├── manifest.webmanifest
         └── sw.js
 ```
@@ -31,10 +37,28 @@ Current course:
 - No unexplained jargon: introduce the name after the intuition.
 - Teach recognition: what clue in a problem should make a technique occur to you?
 - Teaching practice is not the same as coding practice. A phone course should make the learner reason without requiring them to type a full program.
+- Transfer matters: after guided lessons, hide the technique names and mix confusable problem families.
+- Implementation practice should target the few dangerous lines/invariants before asking for a full program.
 - Real coding practice links out to established problem banks such as LeetCode after the mental model is learned.
-- Progress is local and courses should remain useful offline after the first load.
+- Progress and lightweight skill statistics are local; courses should remain useful offline after the first load.
 
-See `COURSE_AUTHORING.md` for the teaching-drill design.
+The intended learning ladder is:
+
+```text
+guided lesson
+    ↓
+mixed recognition / adaptive weak-topic review
+    ↓
+implementation reflexes (fill/spot one critical line)
+    ↓
+full external coding problem
+```
+
+See `COURSE_AUTHORING.md` for the reusable teaching model.
+
+## Quality
+
+`.github/workflows/quality.yml` checks JavaScript syntax, required static assets, and key navigation links on every push to `master` and on pull requests.
 
 ## Deployment
 
