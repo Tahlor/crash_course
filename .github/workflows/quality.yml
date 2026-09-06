@@ -1,0 +1,37 @@
+name: Quality checks
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check JavaScript syntax
+        run: |
+          node --check leetcode/amazon/app.js
+          node --check leetcode/amazon/practice.js
+          node --check leetcode/amazon/sw.js
+          node --check sw.js
+      - name: Check required course assets
+        run: |
+          test -f index.html
+          test -f leetcode/index.html
+          test -f leetcode/amazon/index.html
+          test -f leetcode/amazon/practice.html
+          test -f leetcode/amazon/style.css
+          test -f leetcode/amazon/practice.css
+          test -f leetcode/amazon/app.js
+          test -f leetcode/amazon/practice.js
+          test -f leetcode/amazon/sw.js
+      - name: Check key navigation links
+        run: |
+          grep -q 'href="amazon/"' leetcode/index.html
+          grep -q 'practice.html' leetcode/amazon/app.js
+          grep -q 'index.html?review=' leetcode/amazon/practice.js
