@@ -1,39 +1,43 @@
-# Amazon Coding Crash Course
+# crash_course
 
-A dense, mobile-first algorithms refresher for an Amazon Applied Scientist interview, designed for an experienced programmer who is years removed from algorithms and has not used LeetCode.
+A simple static webapp/repository for learning things quickly on a phone.
 
-## Design goals
+## Structure
 
-- Assume programming competence, but **no remembered algorithms jargon**.
-- Teach the intuition before the name or optimal implementation.
-- Emphasize recognition: *what clues in the prompt should make this technique occur to me?*
-- Bias toward the Amazon Selection & Catalog Systems / Item & Relationship work: product identity, connected groups, graphs, retrieval, ranking, and scale.
-- Keep the recommended path to roughly **2.5 hours**, with an emergency short pass and a fuller pass.
-- Work well on a phone and retain progress locally.
-- Cache the core course for offline reading after the first visit.
+Courses live beneath subject folders. Company-, role-, exam-, or situation-specific variants live beneath the subject.
 
-## Tracks
+```text
+/
+├── index.html
+├── COURSE_AUTHORING.md
+└── leetcode/
+    ├── index.html
+    └── amazon/
+        ├── index.html
+        ├── style.css
+        ├── app.js
+        ├── manifest.webmanifest
+        └── sw.js
+```
 
-### Emergency pass
-Big-O/Python containers, hashing, graph BFS/DFS, Union-Find, heaps/Top-K, and sliding window.
+Current course:
 
-### 2.5-hour recommended pass
-Adds sorting/two pointers, dependency ordering/topological sort, Dijkstra, prefix sums, binary search on the answer, and trees/recursion.
+- `leetcode/amazon/` — dense algorithms refresher for an Amazon Applied Scientist interview.
 
-### Fuller pass
-Adds basic dynamic programming and secondary patterns; combine it with the linked practice problems for roughly a half-day review.
+## Product principles
 
-## External supplements
+- Mobile-first: useful while sitting on a couch, airport seat, or in transit.
+- Dense: assume the learner is smart and wants compression, not a semester course.
+- No unexplained jargon: introduce the name after the intuition.
+- Teach recognition: what clue in a problem should make a technique occur to you?
+- Teaching practice is not the same as coding practice. A phone course should make the learner reason without requiring them to type a full program.
+- Real coding practice links out to established problem banks such as LeetCode after the mental model is learned.
+- Progress is local and courses should remain useful offline after the first load.
 
-The course links selectively to:
-
-- VizLearn for interactive visualizations when animation helps explain mechanics.
-- LeetCode for one representative practice problem after each concept.
-
-These are supplements, not prerequisites.
+See `COURSE_AUTHORING.md` for the teaching-drill design.
 
 ## Deployment
 
-The site is static (`index.html`). `.github/workflows/pages.yml` deploys `master` to GitHub Pages.
+The repository is static and `.github/workflows/pages.yml` deploys `master` to GitHub Pages.
 
-GitHub requires Pages to be enabled once at the repository level with **Settings → Pages → Source: GitHub Actions**. The workflow also requests automatic enablement, but GitHub Apps / Actions tokens can be denied permission to create the Pages site; after the one-time repository setting is enabled, future pushes deploy automatically.
+GitHub requires Pages to be enabled once at the repository level with **Settings → Pages → Source: GitHub Actions**. The workflow requests automatic enablement as well, but GitHub Apps / Actions tokens may be denied permission to create the Pages site. After the one-time setting is enabled, pushes to `master` deploy automatically.
