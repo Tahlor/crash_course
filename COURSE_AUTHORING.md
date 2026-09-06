@@ -12,7 +12,7 @@ Each lesson should answer, in this order:
 4. **What tiny implementation pattern is worth remembering?** Prefer a 5–12 line skeleton over a full solution.
 5. **What goes wrong most often?** State the trap explicitly.
 6. **Can the learner reason through a teaching drill?** Use the flow below.
-7. **Where can they do real coding practice?** Link to one or two closely analogous LeetCode problems.
+7. **Where can they do real coding practice?** Link to one or two closely analogous external practice problems when useful.
 
 ## Teaching drills: the important distinction
 
@@ -100,7 +100,34 @@ This should sound like something a candidate could actually say in 20–40 secon
 
 ### 8. Real coding handoff
 
-End with one or two links to similar LeetCode problems. The course teaches the pattern; LeetCode verifies that the learner can implement it.
+End with one or two links to similar real coding problems. The crash course teaches the pattern; an external judge can verify implementation under typing/compiler pressure.
+
+## Mixed transfer practice
+
+A learner who can solve a “Sliding Window” exercise while reading a lesson titled **Sliding Window** has not yet proved they can recognize the pattern. Every substantial course should therefore include a mixed-practice mode after the guided lessons.
+
+Mixed practice should:
+
+- hide the technique name until after the learner commits to an approach;
+- mix nearby/confusable techniques, not just random unrelated questions;
+- ask at least one follow-up about state, invariant, complexity, or a common trap;
+- use fresh surface stories so the learner cannot memorize the original lesson wording;
+- give explanatory feedback immediately;
+- finish with a compact model answer and a route back to the lesson or external coding practice.
+
+For algorithms, especially useful contrasts include BFS vs Dijkstra, sliding window vs prefix sums, graph traversal vs Union-Find, sorting everything vs a Top-K heap, and direct search vs binary search over a monotonic answer space.
+
+## Adaptive review
+
+If a course contains several independent skills, persist lightweight per-skill statistics locally. Wrong answers should make that skill more likely to appear in a future weak-topic session. Do not turn this into a punitive score or a fake precision metric; the purpose is simply to spend scarce review time where reasoning is least reliable.
+
+A useful minimal record is:
+
+```text
+skill -> attempts, correct
+```
+
+The UI can expose rough accuracy and “not tested” states. Keep progress local unless a future course explicitly needs account-backed synchronization.
 
 ## Mobile rules
 
@@ -109,8 +136,9 @@ End with one or two links to similar LeetCode problems. The course teaches the p
 - One decision per screen-sized chunk.
 - Never hide the explanation behind a wrong-answer penalty.
 - Progress should survive refreshes locally.
-- Core lesson content should cache for offline reading.
+- Core lesson and practice content should cache for offline reading.
 - Avoid giant code blocks; show only the lines that encode the technique.
+- Prefer one-thumb interactions and avoid controls that require precise dragging.
 
 ## Course selection
 
@@ -118,6 +146,7 @@ Each specialized course should have at least:
 
 - an emergency path for the highest-value concepts;
 - a recommended path;
-- a fuller path for lower-priority breadth.
+- a fuller path for lower-priority breadth;
+- mixed transfer practice once the learner has seen the core techniques.
 
 Course authors should explicitly prioritize material based on the learner's goal rather than pretending every topic is equally valuable.
