@@ -1,0 +1,9 @@
+{
+  "name": "Amazon Algorithms Crash Course",
+  "short_name": "Amazon Algo",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "description": "A dense mobile-first algorithms refresher for an Amazon Applied Scientist interview."
+}
