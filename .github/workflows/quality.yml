@@ -17,6 +17,7 @@ jobs:
         run: |
           node --check leetcode/amazon/app.js
           node --check leetcode/amazon/practice.js
+          node --check leetcode/amazon/practice_extra.js
           node --check leetcode/amazon/code.js
           node --check leetcode/amazon/sw.js
           node --check sw.js
@@ -27,11 +28,14 @@ jobs:
           test -f leetcode/amazon/index.html
           test -f leetcode/amazon/practice.html
           test -f leetcode/amazon/code.html
+          test -f leetcode/amazon/cheatsheet.html
           test -f leetcode/amazon/style.css
           test -f leetcode/amazon/practice.css
           test -f leetcode/amazon/code.css
+          test -f leetcode/amazon/cheatsheet.css
           test -f leetcode/amazon/app.js
           test -f leetcode/amazon/practice.js
+          test -f leetcode/amazon/practice_extra.js
           test -f leetcode/amazon/code.js
           test -f leetcode/amazon/sw.js
       - name: Check key navigation links
@@ -39,5 +43,14 @@ jobs:
           grep -q 'href="amazon/"' leetcode/index.html
           grep -q 'practice.html' leetcode/amazon/app.js
           grep -q 'code.html' leetcode/amazon/app.js
+          grep -q 'cheatsheet.html' leetcode/amazon/app.js
+          grep -q 'practice_extra.js' leetcode/amazon/practice.html
+          grep -q 'cheatsheet.html' leetcode/amazon/practice.html
+          grep -q 'cheatsheet.html' leetcode/amazon/code.html
           grep -q 'index.html?review=' leetcode/amazon/practice.js
           grep -q 'index.html?review=' leetcode/amazon/code.js
+      - name: Check offline cache coverage
+        run: |
+          grep -q 'practice_extra.js' leetcode/amazon/sw.js
+          grep -q 'code.html' leetcode/amazon/sw.js
+          grep -q 'cheatsheet.html' leetcode/amazon/sw.js
