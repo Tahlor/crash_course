@@ -129,6 +129,40 @@ skill -> attempts, correct
 
 The UI can expose rough accuracy and “not tested” states. Keep progress local unless a future course explicitly needs account-backed synchronization.
 
+## Implementation reflex drills
+
+Recognition is not enough if a candidate knows “this is BFS” but writes the one line that breaks BFS. Before sending the learner to a full coding environment, rehearse the small implementation decisions with disproportionate failure risk.
+
+Good reflex drills are usually **fill one line**, **choose the correct ordering**, or **spot the bug**. They should test the invariant, not trivia about syntax.
+
+Examples:
+
+- check a Two Sum complement before inserting the current value;
+- mark a BFS node seen when enqueueing, not when dequeuing;
+- seed a prefix-frequency map with the empty prefix;
+- query a prefix map before registering the current prefix;
+- enqueue a dependent only when its indegree reaches zero;
+- preserve `mid` when binary-searching for the first feasible answer;
+- tolerate duplicate Dijkstra heap entries and skip stale pops.
+
+The learner should be able to say *why* the correct line is necessary. A reflex drill should end with a one-sentence rule worth carrying into the interview.
+
+## Recommended learning ladder
+
+For skill-heavy technical material, use this progression when applicable:
+
+```text
+guided lesson
+    ↓
+mixed transfer practice
+    ↓
+implementation reflex drill
+    ↓
+full external practice / realistic task
+```
+
+Each layer removes one kind of support. Do not jump directly from explanation to a blank editor unless typing the full solution is itself the skill being taught.
+
 ## Mobile rules
 
 - No mandatory free-text coding.
@@ -147,6 +181,7 @@ Each specialized course should have at least:
 - an emergency path for the highest-value concepts;
 - a recommended path;
 - a fuller path for lower-priority breadth;
-- mixed transfer practice once the learner has seen the core techniques.
+- mixed transfer practice once the learner has seen the core techniques;
+- implementation-reflex drills when a few lines or ordering mistakes are disproportionately costly.
 
 Course authors should explicitly prioritize material based on the learner's goal rather than pretending every topic is equally valuable.
