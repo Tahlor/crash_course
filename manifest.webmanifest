@@ -1,9 +1,9 @@
 {
-  "name": "Amazon Coding Crash Course",
-  "short_name": "Algo Crash",
+  "name": "Crash Course",
+  "short_name": "Crash Course",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#08111f",
-  "theme_color": "#101826",
-  "description": "A dense, beginner-friendly algorithms refresher for an Amazon Applied Scientist coding interview."
+  "background_color": "#07101d",
+  "theme_color": "#0b1220",
+  "description": "A library of dense, mobile-first crash courses."
 }
