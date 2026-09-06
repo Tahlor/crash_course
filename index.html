@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101826">
+<title>Amazon Coding Crash Course</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#08111f;--card:#101b2d;--soft:#17243a;--text:#edf4ff;--muted:#aebed6;--accent:#ffb84d;--green:#52d59a;--red:#ff7b7b;--line:#2a3b56;--max:820px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#08111f,#0c1625 40%,#08111f);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}a{color:#8bc5ff}.wrap{max-width:var(--max);margin:auto;padding:18px 14px 80px}.hero{padding:18px 2px 10px}.eyebrow{color:var(--accent);font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}.hero h1{font-size:clamp(2rem,8vw,3.5rem);line-height:1.02;margin:.25rem 0 .65rem}.hero p{color:var(--muted);font-size:1.05rem;margin:.4rem 0}.note{border-left:4px solid var(--accent);background:#151f30;padding:10px 12px;border-radius:8px;margin:14px 0}.toolbar{position:sticky;top:0;z-index:10;background:rgba(8,17,31,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 0}.toolbar-inner{max-width:var(--max);margin:auto;padding:0 14px;display:flex;gap:8px;align-items:center;overflow:auto}.pill,.btn{border:1px solid var(--line);background:var(--soft);color:var(--text);border-radius:999px;padding:8px 12px;font-weight:700;white-space:nowrap;cursor:pointer}.pill.active{background:var(--accent);color:#18120a;border-color:var(--accent)}.progress{margin-left:auto;color:var(--muted);font-size:.9rem;white-space:nowrap}.section-title{margin:28px 0 10px;font-size:1.45rem}.plan{display:grid;gap:8px}.plan-row,.lesson{background:rgba(16,27,45,.92);border:1px solid var(--line);border-radius:14px}.plan-row{padding:10px 12px;display:grid;grid-template-columns:42px 1fr auto;gap:9px;align-items:center}.num{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#233650;color:var(--accent);font-weight:900}.mins{color:var(--muted);font-size:.86rem}.lesson{margin:12px 0;overflow:hidden}.lesson-head{padding:14px}.lesson-head h2{margin:2px 0 4px;font-size:1.35rem}.tag{display:inline-block;font-size:.72rem;font-weight:900;border-radius:999px;padding:3px 7px;background:#253b59;color:#cbe4ff;margin-right:5px}.tag.job{background:#43331d;color:#ffd897}.tag.core{background:#173b31;color:#9ef0cc}.why{color:var(--muted);margin:.35rem 0 0}.lesson-body{border-top:1px solid var(--line);padding:14px}.lesson-body h3{font-size:1rem;margin:16px 0 5px;color:#d9e8fa}.lesson-body h3:first-child{margin-top:0}.trigger{font-weight:800;color:#fff}.example{background:#0a1322;border:1px solid #24344d;border-radius:10px;padding:10px 12px;margin:8px 0;overflow:auto}pre{margin:0;white-space:pre-wrap;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e8f2ff}.trap{border-left:3px solid var(--red);padding-left:10px;color:#ffd6d6}.check{background:#13253b;border-radius:10px;padding:10px 12px;margin-top:12px}.answer{display:none;margin-top:8px;color:#d7e6f8}.answer.show{display:block}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.small{padding:6px 10px;font-size:.86rem}.btn.done{background:#153f33;border-color:#2d6d59;color:#a9f2d1}.btn.primary{background:var(--accent);color:#171107;border-color:var(--accent)}.external{font-size:.88rem}.glossary{display:grid;gap:8px}.term{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 11px}.term b{color:var(--accent)}.hidden-track{display:none!important}.footer{color:var(--muted);font-size:.88rem;margin-top:30px;border-top:1px solid var(--line);padding-top:14px}@media(min-width:700px){.wrap{padding-left:20px;padding-right:20px}.lesson-head,.lesson-body{padding:18px}.plan{grid-template-columns:1fr 1fr}.hero{padding-top:28px}}
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="toolbar-inner">
+<button class="pill" data-track="60">60 min</button><button class="pill active" data-track="150">2.5 hr</button><button class="pill" data-track="240">4 hr</button><span class="progress" id="progress">0 / 0</span>
+</div></div>
+<main class="wrap">
+<section class="hero">
+<div class="eyebrow">Amazon Applied Scientist · Coding Reset</div>
+<h1>Algorithms, from rusty to interview-useful.</h1>
+<p>You already know how to program. This course rebuilds the algorithm instincts you have not used in years—without assuming you remember the jargon or the optimal trick.</p>
+<div class="note"><b>Default path:</b> 2½ hours. Learn the idea first, then recognize the clue, then write the tiny Python pattern. The Amazon-specific bias is toward product identity, grouping, relationships, retrieval, and large-scale selection.</div>
+</section>
+
+<h2 class="section-title">Your route</h2>
+<div class="plan" id="plan"></div>
+
+<section class="lesson" data-id="complexity" data-min="8" data-t60="1" data-t150="1" data-t240="1" data-title="Big-O + Python toolbox">
+<div class="lesson-head"><span class="tag core">FOUNDATION</span><h2>1. Big-O + the Python toolbox</h2><p class="why">First learn how interviewers talk about speed, and the five Python containers you will use everywhere.</p></div>
+<div class="lesson-body">
+<h3>The whole point of Big-O</h3><p>Big-O describes how work grows as the input grows. You usually only need these:</p>
+<div class="example"><pre>O(1)       constant: dictionary lookup
+O(log n)   repeatedly cut the search space in half
+O(n)       scan everything once
+O(n log n) typical good sort
+O(n²)      compare every thing with every other thing</pre></div>
+<p>If there are one million products, an O(n) pass is about a million units of work; O(n²) is about a trillion. That is why a clever dictionary can matter.</p>
+<h3>Python containers</h3><div class="example"><pre>list     []        ordered items; append/pop end are fast
+set      set()     unique items; fast "have I seen x?"
+dict     {}        key → value; fast lookup/counting
+deque    deque()   queue; fast add-right/remove-left
+heapq              quickly retrieve the smallest item</pre></div>
+<p class="trap"><b>Trap:</b> Removing the first item from a normal Python list is slow because every later item shifts. Use <code>collections.deque</code> for a queue.</p>
+<div class="check"><b>30-second check:</b> You scan 10 million IDs and want to know whether each has appeared before. List or set?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">A <b>set</b>. Membership is normally O(1); searching a list is O(n), which accidentally makes the whole scan O(n²).</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('complexity',this)">Mark learned</button><a class="btn small external" href="https://vizlearn.in/dsa/" target="_blank">Visual supplement</a></div>
+</div></section>
+
+<section class="lesson" data-id="hash" data-min="12" data-t60="1" data-t150="1" data-t240="1" data-title="Hash maps and sets">
+<div class="lesson-head"><span class="tag core">MUST KNOW</span><h2>2. Hash maps and sets</h2><p class="why">The highest-payoff interview trick: remember useful information instead of searching for it again.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: “seen before,” duplicate, frequency/count, match by ID, pair adding to X, group records by key.</p>
+<h3>The idea</h3><p>Suppose numbers are <code>[4,7,1,8]</code> and you need two that add to 9. When you see 8, you need to know whether 1 appeared earlier. Store earlier numbers in a set.</p>
+<div class="example"><pre>seen = set()
+for x in nums:
+    need = target - x
+    if need in seen:
+        return True
+    seen.add(x)</pre></div>
+<p>Instead of checking every pair, each number asks one fast question. O(n²) becomes O(n).</p>
+<h3>Counting</h3><div class="example"><pre>counts = {}
+for x in items:
+    counts[x] = counts.get(x, 0) + 1</pre></div>
+<p class="trap"><b>Trap:</b> Decide whether to check before inserting. In Two Sum, inserting first can let an item match itself.</p>
+<div class="check"><b>Check:</b> You need the most common product category. What do you store in the dictionary?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">category → count. Scan once to count; then find the maximum count.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('hash',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/two-sum/" target="_blank">Practice: Two Sum</a></div>
+</div></section>
+
+<section class="lesson" data-id="sort" data-min="10" data-t60="0" data-t150="1" data-t240="1" data-title="Sorting + two pointers">
+<div class="lesson-head"><span class="tag core">HIGH VALUE</span><h2>3. Sorting + two pointers</h2><p class="why">Sorting can turn a messy global problem into a simple left-to-right scan.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: intervals overlap, pairs in a sorted array, nearest neighbors, “can ordering make this local?”</p>
+<h3>Two pointers</h3><p>For a sorted list, one pointer starts left and one right. If the sum is too small, move left upward; if too large, move right downward.</p>
+<div class="example"><pre>nums.sort()
+left, right = 0, len(nums)-1
+while left &lt; right:
+    s = nums[left] + nums[right]
+    if s == target: return True
+    if s &lt; target: left += 1
+    else: right -= 1</pre></div>
+<h3>Intervals</h3><p>Sort intervals by start time. Now only the current merged interval can overlap the next one.</p>
+<p class="trap"><b>Trap:</b> Sorting costs O(n log n). That is often excellent, but say the cost aloud.</p>
+<div class="check"><b>Check:</b> Why does sorting help merge intervals?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">After sorting by start, if the next interval does not overlap the current merged one, it cannot overlap any earlier interval either. The relevant comparison becomes local.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('sort',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/merge-intervals/" target="_blank">Practice: Merge Intervals</a></div>
+</div></section>
+
+<section class="lesson" data-id="graph" data-min="22" data-t60="1" data-t150="1" data-t240="1" data-title="Graphs: BFS and DFS">
+<div class="lesson-head"><span class="tag job">AMAZON-ALIGNED</span><span class="tag core">MUST KNOW</span><h2>4. Graphs: breadth-first and depth-first search</h2><p class="why">Products and their relationships naturally form graphs. A graph is just things (“nodes”) connected by relationships (“edges”).</p></div>
+<div class="lesson-body">
+<h3>Represent a graph</h3><div class="example"><pre>graph = {
+  "A": ["B", "C"],
+  "B": ["A", "D"],
+  "C": ["A"],
+  "D": ["B"]
+}</pre></div>
+<h3>Breadth-first search (BFS)</h3><p class="trigger">Think BFS for <b>fewest steps</b> when every edge costs the same. It explores layer 0, then layer 1, then layer 2.</p>
+<div class="example"><pre>from collections import deque
+q = deque([start])
+seen = {start}
+while q:
+    u = q.popleft()
+    for v in graph[u]:
+        if v not in seen:
+            seen.add(v)      # mark WHEN queued
+            q.append(v)</pre></div>
+<h3>Depth-first search (DFS)</h3><p class="trigger">Think DFS for “explore everything reachable,” components, cycles, or tree-like recursion. Follow one path deeply, then back up.</p>
+<div class="example"><pre>def dfs(u):
+    seen.add(u)
+    for v in graph[u]:
+        if v not in seen:
+            dfs(v)</pre></div>
+<p class="trap"><b>Trap:</b> BFS marks a node seen when adding it to the queue, not later when removing it. Otherwise several parents can enqueue the same node.</p>
+<div class="check"><b>Check:</b> Unweighted friendship graph; find minimum number of introductions from A to Z. BFS or DFS?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer"><b>BFS</b>, because it explores by distance in number of edges. The first time you reach Z is a shortest path.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('graph',this)">Mark learned</button><a class="btn small external" href="https://vizlearn.in/dsa/breadth_first_search.html" target="_blank">Watch BFS</a><a class="btn small external" href="https://leetcode.com/problems/number-of-islands/" target="_blank">Practice: Number of Islands</a></div>
+</div></section>
+
+<section class="lesson" data-id="union" data-min="14" data-t60="1" data-t150="1" data-t240="1" data-title="Union-Find / connected groups">
+<div class="lesson-head"><span class="tag job">VERY JOB-SPECIFIC</span><h2>5. Union-Find: “these belong to the same group”</h2><p class="why">Also called Disjoint Set Union. The name is worse than the idea.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: repeatedly merge identities/groups; “A matches B and B matches C”; are X and Y connected?</p>
+<h3>The idea</h3><p>Every item points toward a representative of its group. <b>find(x)</b> asks “which group?” <b>union(a,b)</b> merges two groups.</p>
+<div class="example"><pre>parent = list(range(n))
+
+def find(x):
+    while parent[x] != x:
+        parent[x] = parent[parent[x]]  # shorten path
+        x = parent[x]
+    return x
+
+def union(a, b):
+    ra, rb = find(a), find(b)
+    if ra != rb:
+        parent[rb] = ra</pre></div>
+<p>Example: union(A,B), then union(B,C). Now find(A), find(B), find(C) all return the same group representative.</p>
+<p class="trap"><b>Trap:</b> Do not compare <code>parent[a] == parent[b]</code>. Parents may be intermediate. Compare <code>find(a) == find(b)</code>.</p>
+<div class="check"><b>Check:</b> Seller listings A=B, B=C, D=E arrive as a stream. What are the final groups?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">{A,B,C} and {D,E}. Transitive matching is exactly what Union-Find captures.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('union',this)">Mark learned</button><a class="btn small external" href="https://vizlearn.in/dsa/union_find.html" target="_blank">Watch Union-Find</a><a class="btn small external" href="https://leetcode.com/problems/accounts-merge/" target="_blank">Practice: Accounts Merge</a></div>
+</div></section>
+
+<section class="lesson" data-id="topo" data-min="11" data-t60="0" data-t150="1" data-t240="1" data-title="Dependencies + topological order">
+<div class="lesson-head"><span class="tag job">GRAPH</span><h2>6. Dependencies: topological ordering</h2><p class="why">A fancy name for “what can I do next if prerequisites exist?”</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: prerequisites, dependencies, valid order, build order, cycle makes completion impossible.</p>
+<h3>The idea</h3><p>Count how many prerequisites each item still has. Start with all items having zero. Process one, remove its outgoing dependencies, and anything that reaches zero becomes available.</p>
+<div class="example"><pre>q = deque(nodes_with_zero_prereqs)
+processed = 0
+while q:
+    u = q.popleft(); processed += 1
+    for v in graph[u]:
+        indegree[v] -= 1
+        if indegree[v] == 0:
+            q.append(v)
+
+has_cycle = processed != number_of_nodes</pre></div>
+<p class="trap"><b>Trap:</b> Edges have direction. Decide explicitly whether <code>A → B</code> means “A enables B” or the reverse.</p>
+<div class="check"><b>Check:</b> A needs B, B needs C, C needs A. Why does the queue start empty?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">Every node has one unmet prerequisite. There is no legal starting point, revealing the cycle.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('topo',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/course-schedule/" target="_blank">Practice: Course Schedule</a></div>
+</div></section>
+
+<section class="lesson" data-id="heap" data-min="11" data-t60="1" data-t150="1" data-t240="1" data-title="Heaps + Top K">
+<div class="lesson-head"><span class="tag job">RETRIEVAL</span><span class="tag core">HIGH VALUE</span><h2>7. Heaps: keep the best few without sorting everything</h2><p class="why">Extremely natural for candidate retrieval: best K out of a huge stream.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: top K, kth largest/smallest, repeatedly need current smallest/largest, priority scheduling.</p>
+<h3>The idea</h3><p>A heap is a structure where retrieving the smallest item is cheap. Python's <code>heapq</code> is a min-heap.</p>
+<div class="example"><pre>import heapq
+heap = []
+for score in scores:
+    heapq.heappush(heap, score)
+    if len(heap) > k:
+        heapq.heappop(heap)
+# heap contains the k largest scores</pre></div>
+<p>Why? The heap is allowed to hold only K winners. Whenever K+1 appear, throw away the smallest.</p>
+<p class="trap"><b>Trap:</b> Python gives the <i>smallest</i> item first. For a max-heap, a common trick is to store negative values.</p>
+<div class="check"><b>Check:</b> 1 billion candidate products; need best 100. Why not sort all 1 billion?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">Sorting all costs O(n log n). Maintaining a 100-item heap costs O(n log 100), and memory stays tiny.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('heap',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank">Practice: Top K Frequent</a></div>
+</div></section>
+
+<section class="lesson" data-id="dijkstra" data-min="10" data-t60="0" data-t150="1" data-t240="1" data-title="Weighted shortest paths (Dijkstra)">
+<div class="lesson-head"><span class="tag job">GRAPH</span><h2>8. Dijkstra: shortest path when edges have costs</h2><p class="why">BFS is for equal-cost steps. Dijkstra is the upgrade when relationships have nonnegative weights/costs.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: cheapest/shortest route in a weighted graph; all edge weights are nonnegative.</p>
+<h3>The idea</h3><p>Always expand the currently cheapest known unfinished route. A heap tells you which one that is.</p>
+<div class="example"><pre>dist = {start: 0}
+heap = [(0, start)]
+while heap:
+    d, u = heapq.heappop(heap)
+    if d != dist[u]:
+        continue  # stale older route
+    for v, cost in graph[u]:
+        nd = d + cost
+        if nd < dist.get(v, float('inf')):
+            dist[v] = nd
+            heapq.heappush(heap, (nd, v))</pre></div>
+<p class="trap"><b>Trap:</b> Dijkstra is not correct with negative edge weights.</p>
+<div class="check"><b>Check:</b> All roads count as one hop. Dijkstra or BFS?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">BFS. Dijkstra works, but BFS is simpler and exploits equal edge costs.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('dijkstra',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/network-delay-time/" target="_blank">Practice: Network Delay Time</a></div>
+</div></section>
+
+<section class="lesson" data-id="window" data-min="10" data-t60="1" data-t150="1" data-t240="1" data-title="Sliding window">
+<div class="lesson-head"><span class="tag core">COMMON</span><h2>9. Sliding window: maintain a moving contiguous chunk</h2><p class="why">Avoid recomputing every substring/subarray from scratch.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: longest/shortest <b>contiguous</b> substring or subarray; maintain a condition while moving right.</p>
+<h3>The idea</h3><p>Expand the right edge. If the window becomes invalid, move the left edge until it becomes valid again.</p>
+<div class="example"><pre>left = 0
+seen = set()
+for right, ch in enumerate(s):
+    while ch in seen:
+        seen.remove(s[left])
+        left += 1
+    seen.add(ch)
+    best = max(best, right-left+1)</pre></div>
+<p class="trap"><b>Trap:</b> “Subarray” does not automatically mean sliding window. If values can be positive and negative, validity may not change monotonically when left moves.</p>
+<div class="check"><b>Check:</b> “Longest substring with no repeated character.” What makes the window invalid?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">The new character already exists in the current window. Move left and remove characters until that duplicate is gone.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('window',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank">Practice problem</a></div>
+</div></section>
+
+<section class="lesson" data-id="prefix" data-min="11" data-t60="0" data-t150="1" data-t240="1" data-title="Prefix sums">
+<div class="lesson-head"><span class="tag core">TRICK WORTH MEMORIZING</span><h2>10. Prefix sums: turn range sums into subtraction</h2><p class="why">A cumulative total plus a dictionary solves a surprisingly common family of subarray questions.</p></div>
+<div class="lesson-body">
+<h3>Start simple</h3><p>For <code>[2,3,5,4]</code>, cumulative totals are <code>[2,5,10,14]</code>. Sum from index 1 through 3 is total-through-3 minus total-before-1: <code>14 - 2 = 12</code>.</p>
+<h3>The interview trick</h3><p>If current cumulative total is P and you want a prior point that makes the intervening sum K, you need a prior cumulative total of <code>P-K</code>.</p>
+<div class="example"><pre>freq = {0: 1}
+prefix = answer = 0
+for x in nums:
+    prefix += x
+    answer += freq.get(prefix - k, 0)
+    freq[prefix] = freq.get(prefix, 0) + 1</pre></div>
+<p class="trap"><b>Trap:</b> <code>{0:1}</code> matters: it represents the empty prefix and lets a subarray starting at index 0 count.</p>
+<div class="check"><b>Check:</b> Why do we store how many times each prefix occurred rather than just whether it occurred?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">Because several different starting points can have the same cumulative total, producing several valid subarrays ending here.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('prefix',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/subarray-sum-equals-k/" target="_blank">Practice: Subarray Sum = K</a></div>
+</div></section>
+
+<section class="lesson" data-id="binary" data-min="11" data-t60="0" data-t150="1" data-t240="1" data-title="Binary search on the answer">
+<div class="lesson-head"><span class="tag core">HIGH VALUE</span><h2>11. Binary search: not just searching a sorted array</h2><p class="why">The powerful version finds the boundary where an answer changes from impossible to possible.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: minimum capacity/speed/threshold that makes something possible; maximum value that still works.</p>
+<div class="example"><pre>candidate: 1  2  3  4  5  6
+feasible:  N  N  N  Y  Y  Y
+                  ↑ find boundary</pre></div>
+<div class="example"><pre>while lo < hi:
+    mid = (lo + hi) // 2
+    if feasible(mid):
+        hi = mid
+    else:
+        lo = mid + 1
+return lo</pre></div>
+<p class="trap"><b>Trap:</b> You may binary-search only when the predicate is monotonic: once true, it stays true (or once false, stays false).</p>
+<div class="check"><b>Check:</b> “Smallest processing rate that completes all jobs by deadline.” What must <code>feasible(rate)</code> answer?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">Whether that rate is enough to finish by the deadline. Faster rates remain feasible, giving the false→true boundary.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('binary',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/koko-eating-bananas/" target="_blank">Practice: Koko</a></div>
+</div></section>
+
+<section class="lesson" data-id="trees" data-min="12" data-t60="0" data-t150="1" data-t240="1" data-title="Trees + recursion">
+<div class="lesson-head"><span class="tag core">FOUNDATION</span><h2>12. Trees + recursion: ask what a child returns</h2><p class="why">A tree is a graph with no cycles. Recursion becomes much easier if you define the contract of one function call.</p></div>
+<div class="lesson-body">
+<h3>The mental move</h3><p>Do not think about the whole tree. Ask: <b>if my children already solved their subtrees, what do I need from them?</b></p>
+<div class="example"><pre>def height(node):
+    if node is None:
+        return 0
+    left = height(node.left)
+    right = height(node.right)
+    return 1 + max(left, right)</pre></div>
+<h3>Binary search tree</h3><p>For a binary search tree, every value in the left subtree must be smaller and every value in the right subtree larger. The strongest validation passes allowable lower/upper bounds downward.</p>
+<p class="trap"><b>Trap:</b> Checking only <code>left child &lt; node &lt; right child</code> is insufficient; a deeper descendant can violate an ancestor's bound.</p>
+<div class="check"><b>Check:</b> In a recursion for tree height, what does each call return to its parent?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">The height of that node's subtree. The parent combines the two child answers with <code>1 + max(...)</code>.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('trees',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/validate-binary-search-tree/" target="_blank">Practice: Validate BST</a></div>
+</div></section>
+
+<section class="lesson" data-id="dp" data-min="14" data-t60="0" data-t150="0" data-t240="1" data-title="Dynamic programming">
+<div class="lesson-head"><span class="tag">SECOND TIER</span><h2>13. Dynamic programming: cache repeated smaller problems</h2><p class="why">Lower priority for this short screen, but you should know what the phrase means.</p></div>
+<div class="lesson-body">
+<h3>Recognize it</h3><p class="trigger">Clues: optimization/counting over many choices; same smaller problem gets solved repeatedly; “best way up to position i.”</p>
+<h3>The simplest entry</h3><p>Write a recursive solution and cache each distinct subproblem so it is solved once.</p>
+<div class="example"><pre>from functools import cache
+
+@cache
+def ways(i):
+    if i == 0: return 1
+    if i < 0: return 0
+    return ways(i-1) + ways(i-2)</pre></div>
+<p>This turns an exploding recursion tree into roughly one computation per distinct <code>i</code>.</p>
+<p class="trap"><b>Trap:</b> You need a precise state. If the future answer depends on both position and remaining budget, the cache key needs both.</p>
+<div class="check"><b>Check:</b> What is the central question before writing DP?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">“What variables completely describe a smaller subproblem?” Those variables define the state/cache key.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('dp',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/coin-change/" target="_blank">Practice: Coin Change</a></div>
+</div></section>
+
+<section class="lesson" data-id="extras" data-min="18" data-t60="0" data-t150="0" data-t240="1" data-title="Stacks, backtracking, multi-source BFS">
+<div class="lesson-head"><span class="tag">FULL TRACK</span><h2>14. Three extras worth recognizing</h2><p class="why">Useful patterns, but do not steal time from graphs, hashing, heaps, and basic search.</p></div>
+<div class="lesson-body">
+<h3>Stack</h3><p>Last-in-first-out. Python list works: <code>append()</code>, <code>pop()</code>. Think nested parentheses, undo, next greater/smaller.</p>
+<h3>Backtracking</h3><p>Systematically try choices: <b>choose → recurse → undo</b>. Think subsets, permutations, combination search.</p>
+<div class="example"><pre>path.append(choice)
+search(...)
+path.pop()   # undo</pre></div>
+<h3>Multi-source BFS</h3><p>If you need distance to the nearest one of many sources, put <i>all</i> sources into the initial BFS queue. One outward wave solves everything at once.</p>
+<div class="check"><b>Check:</b> Each grid cell wants distance to nearest hospital. Run BFS from every cell?<button class="btn small" onclick="reveal(this)">Reveal</button><div class="answer">No. Put all hospitals into the queue at distance 0 and run one multi-source BFS.</div></div>
+<div class="actions"><button class="btn done" onclick="toggleDone('extras',this)">Mark learned</button><a class="btn small external" href="https://leetcode.com/problems/rotting-oranges/" target="_blank">Practice: Rotting Oranges</a></div>
+</div></section>
+
+<h2 class="section-title">The recognition sheet</h2>
+<div class="glossary">
+<div class="term"><b>Seen before / count / match by key</b> → set or dictionary</div>
+<div class="term"><b>Fewest equal-cost steps</b> → breadth-first search</div>
+<div class="term"><b>Explore everything reachable / count groups</b> → depth-first search or breadth-first search</div>
+<div class="term"><b>Repeatedly merge identities/groups</b> → Union-Find</div>
+<div class="term"><b>Prerequisites / dependency order</b> → topological ordering</div>
+<div class="term"><b>Best K / kth best / priority</b> → heap</div>
+<div class="term"><b>Shortest weighted path, nonnegative weights</b> → Dijkstra</div>
+<div class="term"><b>Contiguous longest/shortest stretch</b> → sliding window (if validity behaves monotonically)</div>
+<div class="term"><b>Subarray sums, especially with negative numbers</b> → prefix sums, often + dictionary</div>
+<div class="term"><b>Minimum X that makes a test pass</b> → binary search on the answer</div>
+<div class="term"><b>Hierarchy/tree recursion</b> → define what each child returns</div>
+<div class="term"><b>Repeated overlapping smaller optimization problems</b> → dynamic programming</div>
+</div>
+
+<h2 class="section-title">How to actually use this</h2>
+<div class="note"><b>Pass 1:</b> read a lesson until the idea is obvious; do the 30-second check. <b>Pass 2:</b> close the code and reproduce the tiny pattern from memory. <b>Pass 3:</b> attempt the linked problem for 10–15 minutes. If stuck, study the solution immediately, then re-code it without looking. You are learning patterns, not proving moral worth by suffering.</div>
+<p>The external visualization supplement is <a href="https://vizlearn.in/dsa/" target="_blank">VizLearn</a>; use it when an animation would make the mechanism click. For interview practice, LeetCode/NeetCode are useful <i>after</i> the idea is understood.</p>
+<div class="footer">Progress is stored only in this browser. The course is intentionally biased toward the Amazon Item & Relationship / catalog role rather than complete computer-science coverage.</div>
+</main>
+<script>
+const lessons=[...document.querySelectorAll('.lesson')];
+let track=localStorage.getItem('track')||'150';
+const done=new Set(JSON.parse(localStorage.getItem('done')||'[]'));
+function applyTrack(){
+ document.querySelectorAll('.pill').forEach(b=>b.classList.toggle('active',b.dataset.track===track));
+ lessons.forEach(l=>l.classList.toggle('hidden-track',l.dataset['t'+track]!=='1'));
+ const visible=lessons.filter(l=>l.dataset['t'+track]==='1');
+ const plan=document.getElementById('plan'); plan.innerHTML=''; let n=0,total=0;
+ visible.forEach(l=>{n++;total+=+l.dataset.min;const r=document.createElement('div');r.className='plan-row';r.innerHTML=`<div class="num">${n}</div><div><b>${l.dataset.title}</b></div><span class="mins">${l.dataset.min}m</span>`;r.onclick=()=>l.scrollIntoView();plan.appendChild(r)});
+ document.querySelector('.note b').nextSibling;
+ updateProgress();
+}
+function updateProgress(){const visible=lessons.filter(l=>l.dataset['t'+track]==='1');const c=visible.filter(l=>done.has(l.dataset.id)).length;document.getElementById('progress').textContent=`${c} / ${visible.length}`;lessons.forEach(l=>{const b=l.querySelector('.done');if(b){const yes=done.has(l.dataset.id);b.textContent=yes?'✓ Learned':'Mark learned';b.classList.toggle('primary',yes)}})}
+function toggleDone(id){done.has(id)?done.delete(id):done.add(id);localStorage.setItem('done',JSON.stringify([...done]));updateProgress()}
+function reveal(btn){btn.nextElementSibling.classList.toggle('show')}
+document.querySelectorAll('.pill').forEach(b=>b.onclick=()=>{track=b.dataset.track;localStorage.setItem('track',track);applyTrack()});
+applyTrack();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
