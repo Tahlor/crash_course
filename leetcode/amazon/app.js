@@ -6,7 +6,7 @@ let skillStats=JSON.parse(localStorage.getItem(STATS_KEY)||'{}');
 
 lessons.forEach(l=>l.id=`lesson-${l.dataset.id}`);
 const hero=document.querySelector('.hero');
-if(hero&&!document.querySelector('.practiceCta'))hero.insertAdjacentHTML('afterend','<div class="note practiceCta"><b>Training path:</b> learn a pattern here → <a class="btn small primary" href="practice.html">mixed recognition</a> with the labels hidden → <a class="btn small" href="code.html">code reflexes</a> for the dangerous implementation lines → then use the linked LeetCode problem for full coding.</div>');
+if(hero&&!document.querySelector('.practiceCta'))hero.insertAdjacentHTML('afterend','<div class="note practiceCta"><b>Training path:</b> learn a pattern here → <a class="btn small primary" href="practice.html">mixed recognition</a> with the labels hidden → <a class="btn small" href="code.html">code reflexes</a> for the dangerous implementation lines → then use the linked LeetCode problem for full coding. <a class="btn small" href="cheatsheet.html">Cram sheet</a> is the fast review page.</div>');
 
 function recordSkill(skill,correct){
   if(!skill)return;
