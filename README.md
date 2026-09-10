@@ -16,7 +16,7 @@ Courses live beneath subject folders. Company-, role-, exam-, or situation-speci
         ├── index.html          # guided lessons
         ├── practice.html       # mixed/adaptive recognition
         ├── code.html           # tiny implementation-reflex drills
-        ├── cram.html           # dense pre-interview reference
+        ├── cheatsheet.html     # dense pre-interview reference
         ├── app.js
         ├── practice.js
         ├── code.js
