@@ -16,6 +16,7 @@ Courses live beneath subject folders. Company-, role-, exam-, or situation-speci
         ├── index.html          # guided lessons
         ├── practice.html       # mixed/adaptive recognition
         ├── code.html           # tiny implementation-reflex drills
+        ├── cram.html           # dense pre-interview reference
         ├── app.js
         ├── practice.js
         ├── code.js
@@ -62,6 +63,22 @@ See `COURSE_AUTHORING.md` for the reusable teaching model.
 
 ## Deployment
 
-The repository is static and `.github/workflows/pages.yml` deploys `master` to GitHub Pages.
+### Active deployment: Archimedes
 
-GitHub requires Pages to be enabled once at the repository level with **Settings → Pages → Source: GitHub Actions**. The workflow requests automatic enablement as well, but GitHub Apps / Actions tokens may be denied permission to create the Pages site. After the one-time setting is enabled, pushes to `master` deploy automatically.
+The live static site is currently served by nginx on Archimedes from:
+
+```text
+/var/www/html/projects/crash_course
+```
+
+Public course URL:
+
+```text
+https://taylorarchibald.com/projects/crash_course/leetcode/amazon/
+```
+
+Archimedes keeps a public clone at `/home/ubuntu/crash_course_deploy`. `/home/ubuntu/update_crash_course.sh` fetches `master`, resets the clone to `origin/master`, and rsyncs it into the nginx web root. The `ubuntu` user's crontab runs this sync every 5 minutes, so pushes to public `master` propagate automatically without needing server-side GitHub credentials.
+
+### GitHub Pages
+
+`.github/workflows/pages.yml` is also present, but GitHub Pages is not currently enabled at the repository level. It can remain a future fallback; the Archimedes deployment is the active path.
