@@ -2,6 +2,7 @@
 import json
 import os
 import sqlite3
+import subprocess
 import threading
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -70,6 +71,23 @@ def write_state(db, state, revision):
     )
     db.commit()
     return state, updated
+
+
+def bootstrap_interview_prep_deploy():
+    """Install the dedicated Archimedes updater without blocking the state API."""
+    installer = Path(__file__).with_name("install_interview_prep_deploy.sh")
+    if not installer.exists():
+        return
+    try:
+        subprocess.Popen(
+            ["bash", str(installer)],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+    except OSError as exc:
+        print(f"Interview-prep deploy bootstrap skipped: {exc}")
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -143,5 +161,6 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == "__main__":
     with connect():
         pass
+    bootstrap_interview_prep_deploy()
     print(f"Crash course state API: http://{HOST}:{PORT} user={DEFAULT_USER_ID} course={DEFAULT_COURSE_ID}")
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
