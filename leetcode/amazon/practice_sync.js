@@ -65,6 +65,6 @@
     let timer;
     const save=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(session.length)window.CrashState.setSession('mixed',snapshot())},80)};
     document.addEventListener('click',()=>setTimeout(save,0));
-    window.addEventListener('beforeunload',()=>{if(session.length)window.CrashState.setSession('mixed',snapshot())});
+    window.addEventListener('pagehide',()=>{if(session.length){window.CrashState.setSession('mixed',snapshot());window.CrashState.syncNow()}});
   }).catch(err=>console.warn('Mixed-practice sync unavailable',err));
 })();
