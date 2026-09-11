@@ -8,7 +8,13 @@
       track=localStorage.getItem('amazon-track')||'150';
       done.clear();for(const id of JSON.parse(localStorage.getItem('amazon-done')||'[]'))done.add(id);
       skillStats=JSON.parse(localStorage.getItem('amazon-skill-stats')||'{}');
+      const reviewId=new URLSearchParams(location.search).get('review');
+      const reviewTarget=reviewId?lessons.find(l=>l.dataset.id===reviewId):null;
+      if(reviewTarget&&reviewTarget.dataset['t'+track]!=='1'){
+        track='240';localStorage.setItem('amazon-track',track);
+      }
       applyTrack();
+      if(reviewTarget)setTimeout(()=>reviewTarget.scrollIntoView({behavior:'smooth',block:'start'}),60);
     }catch(err){console.warn('Could not refresh synced guided state',err)}
   }
   function snapshot(){
@@ -68,6 +74,6 @@
     document.addEventListener('click',()=>setTimeout(save,0));
     document.addEventListener('change',()=>setTimeout(save,0));
     window.addEventListener('scroll',save,{passive:true});
-    window.addEventListener('beforeunload',()=>window.CrashState.setSession('guided',snapshot()));
+    window.addEventListener('pagehide',()=>{window.CrashState.setSession('guided',snapshot());window.CrashState.syncNow()});
   }).catch(err=>console.warn('Guided sync unavailable',err));
 })();
