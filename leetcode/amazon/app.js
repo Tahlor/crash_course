@@ -62,3 +62,4 @@ applyTrack();
 const review=new URLSearchParams(location.search).get('review');
 if(review){const target=lessons.find(l=>l.dataset.id===review);if(target){if(target.dataset['t'+track]!=='1'){track='240';localStorage.setItem('amazon-track',track);applyTrack()}setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50)}}
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+{const sync=document.createElement('script');sync.src='guided_sync.js';document.body.appendChild(sync)}
