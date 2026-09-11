@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<title>Amazon Algorithms Deep Review</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.6rem;margin:1rem 0 1.5rem}.toc a{display:block;padding:.8rem;border:1px solid rgba(255,255,255,.12);border-radius:12px;text-decoration:none}.algo{margin:1.1rem 0 2.2rem}.algo h2{scroll-margin-top:5rem}.box{padding:1rem;margin:.8rem 0;border:1px solid rgba(255,255,255,.12);border-radius:12px}.walk{border-left:4px solid #7aa7ff}.practice{border-left:4px solid #61d7a1}.warn{border-left:4px solid #ffbf69}.links a{display:inline-block;margin:.25rem .35rem .25rem 0}.tiny{opacity:.78;font-size:.93rem}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.7rem}.matrix{width:100%;border-collapse:collapse}.matrix th,.matrix td{padding:.5rem;border-bottom:1px solid rgba(255,255,255,.12);text-align:left;vertical-align:top}code{white-space:pre-wrap}.checkpoint{font-weight:700}.algo pre{overflow:auto}.hard{font-weight:700}.stickyline{position:sticky;top:0;z-index:4;padding:.5rem 0;background:#07111f}.stickyline a{margin-right:.7rem}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="stickyline"><a class="back" href="index.html">← Guided course</a><a href="practice.html">Mixed practice</a><a href="code.html">Code drills</a><a href="cheatsheet.html">Cram sheet</a></div>
+<section class="hero">
+<div class="eyebrow">Amazon Applied Scientist · deep algorithms reset</div>
+<h1>Know what the algorithm is, why it works, and how to write it.</h1>
+<p>This is the missing layer between recognizing a LeetCode pattern and being able to reconstruct it in a non-compiling LiveCode editor. Each unit has: first principles → mechanics → a complete worked example → one practice problem → medium/hard transfer problems.</p>
+<div class="note"><b>Amazon standard:</b> you usually may use Python standard-library containers such as <code>dict</code>, <code>set</code>, <code>collections.deque</code>, and <code>heapq</code>. You should still understand their mechanics and complexity. Unless the prompt explicitly says “implement a heap/trie/queue,” do not waste interview time rebuilding a standard container.</div>
+</section>
+
+<h2>What to know cold</h2>
+<table class="matrix"><tr><th>Tier</th><th>Topics</th><th>Target</th></tr>
+<tr><td>P0</td><td>hash maps/sets, two pointers, sliding window, binary search, BFS/DFS, topological sort</td><td>Recognize and code cold</td></tr>
+<tr><td>P1</td><td>prefix sums, heaps, Dijkstra, trees/BST, basic DP, stacks</td><td>Explain invariant and code standard form</td></tr>
+<tr><td>P2</td><td>union-find, tries, linked lists, backtracking, sorting/intervals</td><td>Recognize; reconstruct with a minute of thought</td></tr></table>
+
+<div class="toc">
+<a href="#hash">1 · Hash maps + sets</a><a href="#pointers">2 · Two pointers</a><a href="#window">3 · Sliding window</a><a href="#prefix">4 · Prefix sums</a><a href="#binary">5 · Binary search</a><a href="#stack">6 · Stack + monotonic stack</a><a href="#bfsdfs">7 · BFS + DFS</a><a href="#topo">8 · Topological sort</a><a href="#dijkstra">9 · Dijkstra</a><a href="#trees">10 · Trees + BST</a><a href="#heap">11 · Heaps</a><a href="#union">12 · Union-Find</a><a href="#trie">13 · Tries</a><a href="#dp">14 · Dynamic programming</a><a href="#backtrack">15 · Backtracking</a><a href="#intervals">16 · Sorting + intervals</a><a href="#linked">17 · Linked lists</a>
+</div>
+
+<section class="algo" id="hash"><h2>1. Hash maps and sets</h2>
+<p><b>Mental model:</b> trade memory for fast lookup. A set answers “have I seen x?”; a map answers “what information did I store for key x?” Average lookup/insert is O(1), with O(n) space.</p>
+<div class="box"><b>Know internally:</b> hashes map keys into buckets; collisions are handled by the implementation. You do <em>not</em> implement the hash table in this interview. You do need to know that dictionary lookup is average O(1), not guaranteed mathematical O(1) in every imaginable adversarial implementation.</div>
+<div class="box walk"><h3>Complete walkthrough · Two Sum</h3><p>Input <code>[2,7,11,15]</code>, target 9. Brute force tests every pair: O(n²). Instead, when reading x, the only value that can complete it is <code>target-x</code>.</p><ol><li>x=2, need=7. 7 not seen. Store 2→index 0.</li><li>x=7, need=2. 2 is in the map at 0.</li><li>Return [0,1].</li></ol><pre>def two_sum(nums, target):
+    seen = {}
+    for i, x in enumerate(nums):
+        need = target - x
+        if need in seen:
+            return [seen[need], i]
+        seen[x] = i</pre><p><b>Invariant:</b> before processing index i, <code>seen</code> contains exactly the useful information from indices &lt; i. Time O(n), space O(n).</p></div>
+<div class="box practice"><h3>Practice · Group Anagrams</h3><p>Given strings, group words that are anagrams. Before coding, decide what canonical key identifies an anagram class. Target: O(total characters) if using character counts.</p><div class="links"><a href="https://leetcode.com/problems/group-anagrams/" target="_blank">LeetCode · Group Anagrams (Medium)</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/longest-consecutive-sequence/" target="_blank">Longest Consecutive Sequence · Medium</a><a href="https://leetcode.com/problems/first-missing-positive/" target="_blank">First Missing Positive · Hard</a></div>
+</section>
+
+<section class="algo" id="pointers"><h2>2. Two pointers</h2>
+<p><b>Mental model:</b> maintain two positions whose movement is justified by an ordering or invariant. Typical forms: opposite ends of a sorted array; slow/fast compaction; two sequences advancing independently.</p>
+<div class="box walk"><h3>Complete walkthrough · Container With Most Water</h3><p>For heights <code>[1,8,6,2,5,4,8,3,7]</code>, start at both ends. Area is <code>min(h[L],h[R])*(R-L)</code>. The shorter wall is the bottleneck. Moving the taller wall inward cannot increase width and cannot improve the limiting height, so move the shorter wall.</p><ol><li>L=0 (1), R=8 (7): area 8. Move L.</li><li>L=1 (8), R=8 (7): area 49. Move R.</li><li>Continue until pointers meet; best remains 49.</li></ol><pre>def max_area(h):
+    l, r = 0, len(h)-1
+    best = 0
+    while l < r:
+        best = max(best, min(h[l], h[r]) * (r-l))
+        if h[l] <= h[r]: l += 1
+        else: r -= 1
+    return best</pre><p>Time O(n), space O(1).</p></div>
+<div class="box practice"><h3>Practice · 3Sum</h3><p>Sort first. Fix one number, then solve a two-sum-on-sorted-array problem with left/right pointers. The difficulty is duplicate handling.</p><div class="links"><a href="https://leetcode.com/problems/3sum/" target="_blank">LeetCode · 3Sum (Medium)</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/trapping-rain-water/" target="_blank">Trapping Rain Water · Hard</a></div>
+</section>
+
+<section class="algo" id="window"><h2>3. Sliding window</h2>
+<p><b>Mental model:</b> a contiguous range whose state can be updated when the right boundary grows and the left boundary shrinks. The crucial question is whether the invalid condition can be repaired by moving left only forward.</p>
+<div class="box walk"><h3>Complete walkthrough · Longest Substring Without Repeating Characters</h3><p>Input <code>abba</code>. Keep <code>left</code> and the most recent index of each character.</p><ol><li>right=0, a: window [0,0], best 1; last[a]=0.</li><li>right=1, b: window [0,1], best 2; last[b]=1.</li><li>right=2, b repeated at 1: set left=max(left,1+1)=2. Window [2,2].</li><li>right=3, a was at 0, but 0 is outside current window, so left stays 2. Window “ba”, length 2.</li></ol><pre>def longest_unique(s):
+    left = 0
+    last = {}
+    best = 0
+    for right, ch in enumerate(s):
+        if ch in last:
+            left = max(left, last[ch] + 1)
+        last[ch] = right
+        best = max(best, right-left+1)
+    return best</pre><p><b>Invariant:</b> s[left:right+1] has no duplicate characters. Time O(n).</p></div>
+<div class="box practice"><h3>Practice · Longest Repeating Character Replacement</h3><p>Maintain counts in the current window and the maximum frequency inside it. Derive why <code>window_size - max_frequency <= k</code> is the validity condition.</p><div class="links"><a href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/minimum-window-substring/" target="_blank">Minimum Window Substring · Hard</a></div>
+</section>
+
+<section class="algo" id="prefix"><h2>4. Prefix sums</h2>
+<p><b>Mental model:</b> summarize everything before a position so a range or prior-state question becomes constant-time. Define <code>P[i]</code> as the sum of the first i values; then sum(l..r)=P[r+1]-P[l].</p>
+<div class="box walk"><h3>Complete walkthrough · Subarray Sum Equals K</h3><p>Input <code>[1,2,1,2]</code>, k=3. Let current prefix be P. A subarray ending here sums to k when an earlier prefix equals <code>P-k</code>.</p><ol><li>Start frequency {0:1}; P=0.</li><li>Read 1: P=1; need -2 → 0 matches. Store prefix 1.</li><li>Read 2: P=3; need 0 → one earlier prefix, so answer=1. Store 3.</li><li>Read 1: P=4; need 1 → one match, answer=2.</li><li>Read 2: P=6; need 3 → one match, answer=3.</li></ol><pre>def subarray_sum(nums, k):
+    freq = {0: 1}
+    prefix = ans = 0
+    for x in nums:
+        prefix += x
+        ans += freq.get(prefix-k, 0)
+        freq[prefix] = freq.get(prefix, 0) + 1
+    return ans</pre><p>Time O(n), space O(n). Sliding window does <em>not</em> generally work here if negative values are allowed.</p></div>
+<div class="box practice"><h3>Practice · Contiguous Array</h3><p>Convert 0 to -1. Then equal numbers of 0s and 1s means a subarray sum of zero; store the first index of each prefix sum.</p><div class="links"><a href="https://leetcode.com/problems/contiguous-array/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/count-of-range-sum/" target="_blank">Count of Range Sum · Hard</a></div>
+</section>
+
+<section class="algo" id="binary"><h2>5. Binary search — including “binary search on the answer”</h2>
+<p><b>Mental model:</b> you need a monotone predicate: once some condition becomes true (or false), it stays that way. Search the boundary.</p>
+<div class="box walk"><h3>Complete walkthrough · Koko Eating Bananas</h3><p>Piles <code>[3,6,7,11]</code>, h=8. We seek the smallest integer speed k such that total hours <code>sum(ceil(p/k)) <= 8</code>. If speed k works, every larger speed works: monotonicity.</p><ol><li>Search k in [1,11]. mid=6 → hours 1+1+2+2=6, feasible; keep 6 and search left.</li><li>[1,6], mid=3 → 1+2+3+4=10, infeasible; search right.</li><li>[4,6], mid=5 → 1+2+2+3=8, feasible; search left.</li><li>[4,5], mid=4 → 1+2+2+3=8, feasible. Answer 4.</li></ol><pre>def min_speed(piles, h):
+    lo, hi = 1, max(piles)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        hours = sum((p + mid - 1)//mid for p in piles)
+        if hours <= h: hi = mid
+        else: lo = mid + 1
+    return lo</pre><p>Time O(n log M), where M=max pile.</p></div>
+<div class="box practice"><h3>Practice · Search in Rotated Sorted Array</h3><p>At every midpoint, at least one half is sorted. Decide whether target lies in the sorted half before discarding a side.</p><div class="links"><a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/median-of-two-sorted-arrays/" target="_blank">Median of Two Sorted Arrays · Hard</a></div>
+</section>
+
+<section class="algo" id="stack"><h2>6. Stack and monotonic stack</h2>
+<p><b>Stack:</b> last-in-first-out. Use for nested structure, undo, DFS, parsing. <b>Monotonic stack:</b> keep stack values/indices increasing or decreasing so each item is pushed and popped at most once.</p>
+<div class="box walk"><h3>Complete walkthrough · Daily Temperatures</h3><p>Temperatures <code>[73,74,75,71,69,72,76,73]</code>. Keep indices whose warmer day has not been found, with temperatures decreasing along the stack.</p><ol><li>73 → stack [0].</li><li>74 > 73, pop 0: answer[0]=1. Push 1.</li><li>75 > 74, pop 1: answer[1]=1. Push 2.</li><li>71,69 push; then 72 pops 69 and 71, giving waits 1 and 2.</li><li>76 eventually pops 72 and 75.</li></ol><pre>def daily_temperatures(t):
+    ans = [0]*len(t)
+    stack = []
+    for i, temp in enumerate(t):
+        while stack and t[stack[-1]] < temp:
+            j = stack.pop()
+            ans[j] = i-j
+        stack.append(i)
+    return ans</pre><p>Although there is a nested while-loop, each index enters and leaves once: O(n).</p></div>
+<div class="box practice"><h3>Practice · Next Greater Element II</h3><p>Use a decreasing stack of unresolved indices; simulate circularity by scanning 2n positions.</p><div class="links"><a href="https://leetcode.com/problems/next-greater-element-ii/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/largest-rectangle-in-histogram/" target="_blank">Largest Rectangle in Histogram · Hard</a></div>
+</section>
+
+<section class="algo" id="bfsdfs"><h2>7. BFS and DFS</h2>
+<p><b>Graph representation:</b> adjacency list is normally O(V+E) space. BFS uses a queue and explores by distance layers; DFS uses recursion or an explicit stack and follows a path deeply.</p>
+<div class="grid2"><div class="box"><b>Use BFS for:</b> shortest path when all edges have equal cost, level-order traversal, minimum number of moves, multi-source spread.</div><div class="box"><b>Use DFS for:</b> reachability, connected components, cycle exploration, recursive trees, backtracking.</div></div>
+<div class="box walk"><h3>Complete walkthrough · Number of Islands</h3><p>For every unvisited land cell, increment component count and flood-fill all connected land.</p><pre>def num_islands(grid):
+    rows, cols = len(grid), len(grid[0])
+    seen = set()
+    def dfs(r,c):
+        if r<0 or r>=rows or c<0 or c>=cols: return
+        if grid[r][c] != '1' or (r,c) in seen: return
+        seen.add((r,c))
+        dfs(r+1,c); dfs(r-1,c); dfs(r,c+1); dfs(r,c-1)
+    count = 0
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c]=='1' and (r,c) not in seen:
+                count += 1
+                dfs(r,c)
+    return count</pre><p>Each cell is visited at most once: O(RC) time, O(RC) worst-case auxiliary space.</p></div>
+<div class="box practice"><h3>Practice · Rotting Oranges</h3><p>This is <b>multi-source BFS</b>: enqueue every initially rotten orange at minute 0, then spread layer by layer.</p><div class="links"><a href="https://leetcode.com/problems/rotting-oranges/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/word-ladder/" target="_blank">Word Ladder · Hard</a></div>
+</section>
+
+<section class="algo" id="topo"><h2>8. Topological sort</h2>
+<p><b>Use when:</b> prerequisites, dependencies, legal execution order, DAG scheduling. A topological order exists only for a directed acyclic graph.</p>
+<div class="box"><b>Kahn's algorithm:</b> indegree counts unmet prerequisites. Start with all zero-indegree nodes. Removing a node “satisfies” one prerequisite for each outgoing neighbor. If fewer than V nodes are processed, a cycle blocked the remainder.</div>
+<div class="box walk"><h3>Complete walkthrough · Course Schedule</h3><p>Courses 0..3, prerequisites <code>[[1,0],[2,0],[3,1],[3,2]]</code>. Interpret edge prerequisite→course: 0→1,0→2,1→3,2→3. Indegrees [0,1,1,2].</p><ol><li>Queue starts [0].</li><li>Remove 0: indegree 1 and 2 become 0, enqueue both.</li><li>Remove 1: indegree 3 becomes 1.</li><li>Remove 2: indegree 3 becomes 0, enqueue 3.</li><li>Remove 3. Processed all four ⇒ no cycle.</li></ol><pre>from collections import deque
+
+def can_finish(n, prerequisites):
+    graph = [[] for _ in range(n)]
+    indeg = [0]*n
+    for course, pre in prerequisites:
+        graph[pre].append(course)
+        indeg[course] += 1
+    q = deque(i for i,d in enumerate(indeg) if d==0)
+    done = 0
+    while q:
+        u = q.popleft(); done += 1
+        for v in graph[u]:
+            indeg[v] -= 1
+            if indeg[v] == 0: q.append(v)
+    return done == n</pre><p>O(V+E).</p></div>
+<div class="box practice"><h3>Practice · Course Schedule II</h3><p>Same mechanics, but return the order rather than a boolean.</p><div class="links"><a href="https://leetcode.com/problems/course-schedule-ii/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/parallel-courses-iii/" target="_blank">Parallel Courses III · Hard</a></div>
+</section>
+
+<section class="algo" id="dijkstra"><h2>9. Dijkstra's shortest path</h2>
+<p><b>Use when:</b> weighted graph with nonnegative edge weights. If edges are all equal, BFS is simpler. Negative edges invalidate Dijkstra's greedy finalization logic.</p>
+<div class="box walk"><h3>Complete walkthrough · shortest paths</h3><p>Edges: A→B cost 4, A→C cost 1, C→B cost 2, B→D cost 1, C→D cost 5.</p><ol><li>dist[A]=0, heap [(0,A)].</li><li>Pop A. Relax B=4, C=1.</li><li>Pop C (1). Improve B from 4 to 3; D=6.</li><li>Pop B (3). Improve D to 4.</li><li>A stale heap entry for B at cost 4 may still appear; skip it because it no longer equals dist[B].</li><li>Final D=4 via A→C→B→D.</li></ol><pre>import heapq
+
+def dijkstra(graph, src):
+    dist = {src: 0}
+    heap = [(0, src)]
+    while heap:
+        cost, u = heapq.heappop(heap)
+        if cost != dist[u]:
+            continue
+        for v, w in graph[u]:
+            new = cost + w
+            if new < dist.get(v, float('inf')):
+                dist[v] = new
+                heapq.heappush(heap, (new, v))
+    return dist</pre><p>O((V+E) log V) in the standard heap implementation.</p></div>
+<div class="box practice"><h3>Practice · Network Delay Time</h3><p>Run Dijkstra from the source and return the maximum finite shortest-path distance if every node is reached.</p><div class="links"><a href="https://leetcode.com/problems/network-delay-time/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/swim-in-rising-water/" target="_blank">Swim in Rising Water · Hard</a></div>
+</section>
+
+<section class="algo" id="trees"><h2>10. Trees and binary search trees</h2>
+<p><b>Mental model:</b> recursive structure. A node's answer is often built from answers returned by its children. Decide what information each recursive call must return.</p>
+<div class="box"><b>BST rule:</b> every value in an entire left subtree must satisfy a lower/upper bound, not merely be smaller than the immediate parent. This is why checking only parent-child relationships is insufficient.</div>
+<div class="box walk"><h3>Complete walkthrough · Validate BST</h3><p>Pass an allowed interval down the tree. Root starts (-∞,+∞). Left child inherits upper bound=root.val; right child inherits lower bound=root.val.</p><pre>def is_valid_bst(root):
+    def valid(node, low, high):
+        if not node: return True
+        if not (low < node.val < high): return False
+        return (valid(node.left, low, node.val) and
+                valid(node.right, node.val, high))
+    return valid(root, float('-inf'), float('inf'))</pre><p>O(n) time, O(h) call-stack space.</p></div>
+<div class="box practice"><h3>Practice · Lowest Common Ancestor of a Binary Tree</h3><p>Think about what each subtree returns: “I found p”, “I found q”, or “I found their LCA.”</p><div class="links"><a href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/binary-tree-maximum-path-sum/" target="_blank">Binary Tree Maximum Path Sum · Hard</a></div>
+</section>
+
+<section class="algo" id="heap"><h2>11. Heaps — what they actually are</h2>
+<p><b>Definition:</b> a heap is a <em>complete binary tree</em> satisfying a local order invariant. In a min-heap every parent ≤ its children, so the minimum is at the root. It is <b>not fully sorted</b>.</p>
+<div class="box"><h3>Array representation</h3><p>Store a complete tree densely in an array. For index i: parent=<code>(i-1)//2</code>, left=<code>2*i+1</code>, right=<code>2*i+2</code>.</p><pre>values: [2, 5, 4, 9, 7, 8]
+index :  0  1  2  3  4  5
+
+        2
+      /   \
+     5     4
+    / \   /
+   9   7 8</pre><p><b>Push:</b> append at the end, then sift upward while smaller than parent: O(log n). <b>Pop-min:</b> move last item to root, remove old root, then sift downward toward the smaller child: O(log n). <b>Peek:</b> O(1). <b>heapify:</b> O(n), surprisingly better than n independent pushes.</p></div>
+<div class="box warn"><b>Will you need to implement a heap?</b> Probably not. For ordinary algorithm questions, use Python <code>heapq</code>. But you should be able to sketch sift-up/sift-down if asked “how does a heap work?” or if the prompt explicitly says to implement one. Python's <code>heapq</code> is a min-heap; use negative priorities for a simple max-heap.</div>
+<div class="box walk"><h3>Complete walkthrough · Top K Frequent Elements</h3><p>Suppose counts are a:10, b:3, c:7, d:5 and k=2. Keep a min-heap of at most k pairs (count,item).</p><ol><li>Push (10,a).</li><li>Push (3,b).</li><li>Push (7,c) → size 3, pop smallest (3,b). Heap represents a,c.</li><li>Push (5,d) → pop (5,d). Survivors are counts 7 and 10.</li></ol><pre>import heapq
+from collections import Counter
+
+def top_k(nums, k):
+    heap = []
+    for value, count in Counter(nums).items():
+        heapq.heappush(heap, (count, value))
+        if len(heap) > k:
+            heapq.heappop(heap)
+    return [value for count, value in heap]</pre><p>With m distinct values: O(m log k), O(m+k) including the count map.</p></div>
+<div class="box practice"><h3>Practice · Kth Largest Element in an Array</h3><p>Maintain a min-heap of size k. The root is then the kth largest among everything processed.</p><div class="links"><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/merge-k-sorted-lists/" target="_blank">Merge K Sorted Lists · Hard</a><a href="https://leetcode.com/problems/find-median-from-data-stream/" target="_blank">Find Median from Data Stream · Hard</a></div>
+</section>
+
+<section class="algo" id="union"><h2>12. Union-Find / Disjoint Set Union</h2>
+<p><b>Use when:</b> repeatedly merging groups and asking whether items belong to the same connected component. Core operations are <code>find(x)</code> and <code>union(a,b)</code>.</p>
+<div class="box"><b>Path compression:</b> during find, point nodes directly toward the representative. <b>Union by rank/size:</b> attach the smaller tree below the larger. Together, amortized operations are effectively constant time: O(α(n)).</div>
+<div class="box walk"><h3>Complete walkthrough · connectivity</h3><p>Edges arrive A-B, C-D, B-C. Initially every node is its own parent. Union A-B makes one group; C-D makes another; B-C joins the two roots, so A,B,C,D become one component.</p><pre>class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.size = [1]*n
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    def union(self, a, b):
+        ra, rb = self.find(a), self.find(b)
+        if ra == rb: return False
+        if self.size[ra] < self.size[rb]: ra, rb = rb, ra
+        self.parent[rb] = ra
+        self.size[ra] += self.size[rb]
+        return True</pre></div>
+<div class="box practice"><h3>Practice · Accounts Merge</h3><p>Emails connect account records transitively. Union records sharing an email, then gather by representative.</p><div class="links"><a href="https://leetcode.com/problems/accounts-merge/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/number-of-good-paths/" target="_blank">Number of Good Paths · Hard</a></div>
+</section>
+
+<section class="algo" id="trie"><h2>13. Tries</h2>
+<p><b>Use when:</b> many string keys share prefixes and you need prefix lookup, autocomplete, dictionary pruning, or character-by-character search.</p>
+<div class="box"><b>Structure:</b> each node maps next-character → child and usually stores an end-of-word flag. Search/insert costs O(L) for a word length L, independent of the number of stored words, though memory can be high.</div>
+<div class="box walk"><h3>Complete walkthrough · insert/search</h3><p>Insert “cat” and “car”. Both share root→c→a; only the final branch differs t versus r.</p><pre>class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.end = False
+
+class Trie:
+    def __init__(self): self.root = TrieNode()
+    def insert(self, word):
+        node = self.root
+        for ch in word:
+            node = node.children.setdefault(ch, TrieNode())
+        node.end = True
+    def search(self, word):
+        node = self.root
+        for ch in word:
+            if ch not in node.children: return False
+            node = node.children[ch]
+        return node.end</pre></div>
+<div class="box practice"><h3>Practice · Implement Trie</h3><p>Add <code>startsWith(prefix)</code>. Be clear about the difference between “path exists” and “full word ends here.”</p><div class="links"><a href="https://leetcode.com/problems/implement-trie-prefix-tree/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/word-search-ii/" target="_blank">Word Search II · Hard</a></div>
+</section>
+
+<section class="algo" id="dp"><h2>14. Dynamic programming</h2>
+<p><b>Mental model:</b> overlapping subproblems + optimal substructure. Do not start by drawing a table. First define the state in words, then recurrence, base cases, and evaluation order.</p>
+<div class="box walk"><h3>Complete walkthrough · House Robber</h3><p>Money <code>[2,7,9,3,1]</code>. Let <code>dp[i]</code> be maximum money using houses through i. At house i, either skip it and keep dp[i-1], or rob it and add nums[i] to dp[i-2].</p><pre>dp[i] = max(dp[i-1], dp[i-2] + nums[i])</pre><p>Values: dp0=2; dp1=max(2,7)=7; dp2=max(7,2+9)=11; dp3=max(11,7+3)=11; dp4=max(11,11+1)=12.</p><pre>def rob(nums):
+    prev2 = prev1 = 0
+    for money in nums:
+        prev2, prev1 = prev1, max(prev1, prev2 + money)
+    return prev1</pre><p>O(n) time, O(1) extra space.</p></div>
+<div class="box practice"><h3>Practice · Coin Change</h3><p>State: minimum coins needed to make amount x. Transition from x-coin. Decide what value represents “unreachable.”</p><div class="links"><a href="https://leetcode.com/problems/coin-change/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/edit-distance/" target="_blank">Edit Distance · Medium</a><a href="https://leetcode.com/problems/burst-balloons/" target="_blank">Burst Balloons · Hard</a></div>
+</section>
+
+<section class="algo" id="backtrack"><h2>15. Backtracking</h2>
+<p><b>Mental model:</b> DFS over a decision tree. Choose → recurse → undo. Use when you must enumerate possibilities but can prune invalid partial solutions.</p>
+<div class="box walk"><h3>Complete walkthrough · Combination Sum</h3><p>Candidates [2,3,6,7], target 7. At each recursion, choose a candidate at or after the current index; allowing the same index again permits reuse. Track remaining target.</p><pre>def combination_sum(candidates, target):
+    ans = []
+    def dfs(start, remain, path):
+        if remain == 0:
+            ans.append(path.copy()); return
+        if remain < 0: return
+        for i in range(start, len(candidates)):
+            path.append(candidates[i])
+            dfs(i, remain-candidates[i], path)
+            path.pop()
+    dfs(0, target, [])
+    return ans</pre><p>The complexity is output/exponential in the worst case; explain pruning rather than pretending it is polynomial.</p></div>
+<div class="box practice"><h3>Practice · Permutations</h3><p>Maintain a path plus used-set, or swap in place. Be able to explain the recursion tree.</p><div class="links"><a href="https://leetcode.com/problems/permutations/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/n-queens/" target="_blank">N-Queens · Hard</a></div>
+</section>
+
+<section class="algo" id="intervals"><h2>16. Sorting, sweep logic, and intervals</h2>
+<p><b>Sorting is often the algorithmic move:</b> by imposing order you can make local decisions that would otherwise require all-pairs comparisons. Python sorting is O(n log n).</p>
+<div class="box walk"><h3>Complete walkthrough · Merge Intervals</h3><p>Input [[1,3],[2,6],[8,10],[15,18]]. Sort by start. Keep the last merged interval.</p><ol><li>[1,3] starts result.</li><li>[2,6] overlaps because 2≤3; extend end to 6.</li><li>[8,10] starts after 6; append.</li><li>[15,18] starts after 10; append.</li></ol><pre>def merge(intervals):
+    intervals.sort()
+    out = []
+    for start, end in intervals:
+        if not out or start > out[-1][1]:
+            out.append([start,end])
+        else:
+            out[-1][1] = max(out[-1][1], end)
+    return out</pre><p>O(n log n) due to sorting.</p></div>
+<div class="box practice"><h3>Practice · Insert Interval</h3><p>Because input is sorted and non-overlapping, process intervals before the new one, merge overlaps, then append those after it.</p><div class="links"><a href="https://leetcode.com/problems/insert-interval/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/employee-free-time/" target="_blank">Employee Free Time · Hard/Premium</a></div>
+</section>
+
+<section class="algo" id="linked"><h2>17. Linked lists</h2>
+<p><b>Why review them:</b> lower probability for this AS screen, but they teach pointer manipulation and appear inside designs such as LRU Cache. A singly linked node stores value + next; a doubly linked node adds prev.</p>
+<div class="box walk"><h3>Complete walkthrough · Reverse Linked List</h3><p>For A→B→C, keep <code>prev</code> and <code>cur</code>. Save cur.next before rewiring it, or you lose the rest of the list.</p><pre>def reverse(head):
+    prev = None
+    cur = head
+    while cur:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev</pre><p>O(n) time, O(1) space.</p></div>
+<div class="box practice"><h3>Practice · LRU Cache</h3><p>To make get/put O(1), combine a hash map key→node with a doubly linked list ordered by recency. This is a classic “two data structures because each solves one half” problem.</p><div class="links"><a href="https://leetcode.com/problems/lru-cache/" target="_blank">LeetCode · Medium</a></div></div>
+<div class="links"><b>Transfer:</b> <a href="https://leetcode.com/problems/reverse-nodes-in-k-group/" target="_blank">Reverse Nodes in k-Group · Hard</a></div>
+</section>
+
+<section class="hero"><h2>How to use this for the phone screen</h2>
+<ol><li>Read one algorithm review until you can explain the invariant without looking.</li><li>Cover the code and reconstruct it from the worked example.</li><li>Do the single practice problem in a blank editor with <b>no execution for the first 20 minutes</b>.</li><li>Then use one transfer problem. Medium first; hard is for stretching recognition, not a requirement to solve every hard cold.</li><li>For every solution say: brute force → observation → invariant → code → hand trace → time/space.</li></ol>
+<div class="note"><b>Do not confuse “I understood the solution” with “I can produce it.”</b> The Amazon editor will not compile, so reconstruction and manual tracing are the skill being tested.</div>
+</section>
+</main>
+</body>
+</html>
