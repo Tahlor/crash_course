@@ -1,0 +1,16 @@
+[Unit]
+Description=Crash Course single-user state API
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/crash_course_deploy
+Environment=PYTHONUNBUFFERED=1
+Environment=CRASH_COURSE_PORT=8877
+ExecStart=/usr/bin/python3 /home/ubuntu/crash_course_deploy/server/state_api.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
