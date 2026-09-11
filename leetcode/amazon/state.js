@@ -104,7 +104,7 @@
   }
 
   async function pushOnce(){
-    const response=await fetch(API,{method:'PUT',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({baseRevision:revision,state})});
+    const response=await fetch(API,{method:'PUT',headers:{'Content-Type':'application/json'},cache:'no-store',keepalive:true,body:JSON.stringify({baseRevision:revision,state})});
     const payload=await response.json();
     if(response.status===409){
       revision=payload.revision||0;
@@ -141,10 +141,10 @@
       if(!response.ok)throw new Error(`state GET ${response.status}`);
       const payload=await response.json();
       revision=payload.revision||0;
-      const before=JSON.stringify(state);
+      const remote=payload.state?normalize(payload.state):null;
       state=merge(payload.state,state);
       persistLocal();
-      if(JSON.stringify(state)!==before||!payload.state)scheduleFlush(50);
+      if(!remote||JSON.stringify(state)!==JSON.stringify(remote))scheduleFlush(50);
       window.dispatchEvent(new CustomEvent('crashstate:ready',{detail:{revision,state:clone(state)}}));
       return state;
     }catch(err){
