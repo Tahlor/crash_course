@@ -57,6 +57,6 @@
     let timer;
     const save=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(order.length)window.CrashState.setSession('code',snapshot())},80)};
     document.addEventListener('click',()=>setTimeout(save,0));
-    window.addEventListener('beforeunload',()=>{if(order.length)window.CrashState.setSession('code',snapshot())});
+    window.addEventListener('pagehide',()=>{if(order.length){window.CrashState.setSession('code',snapshot());window.CrashState.syncNow()}});
   }).catch(err=>console.warn('Code-reflex sync unavailable',err));
 })();
