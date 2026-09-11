@@ -1,0 +1,28 @@
+name: Verify interview prep on Archimedes
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for deploy and verify study guide
+        shell: bash
+        run: |
+          set -u
+          url="https://taylorarchibald.com/projects/interview_prep/companies/amazon/study-guide/"
+          for attempt in $(seq 1 24); do
+            body="$(curl -fsSL --connect-timeout 5 --max-time 15 "$url" 2>/dev/null || true)"
+            if grep -Fq "Complete Amazon Applied Scientist science study guide" <<<"$body"; then
+              echo "Verified $url"
+              exit 0
+            fi
+            echo "Attempt $attempt: not live yet"
+            sleep 10
+          done
+          echo "Archimedes study guide did not become available"
+          curl -sSIL --connect-timeout 5 --max-time 15 "$url" || true
+          exit 1
