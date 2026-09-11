@@ -5,6 +5,7 @@ REPO=/home/ubuntu/interview_prep_deploy
 WEBROOT=/var/www/html/projects/interview_prep
 VENV=/home/ubuntu/.venvs/interview_prep
 LOCK=/tmp/interview-prep-deploy.lock
+DEPLOY_TAG=archimedes-deployed
 
 exec 9>"$LOCK"
 flock -n 9 || exit 0
@@ -29,4 +30,8 @@ fi
 "$VENV/bin/mkdocs" build --clean
 mkdir -p "$WEBROOT"
 rsync -a --delete site/ "$WEBROOT/"
-printf 'deployed %s\n' "$(git rev-parse HEAD)"
+
+sha="$(git rev-parse HEAD)"
+git tag -f "$DEPLOY_TAG" "$sha"
+git push -f origin "refs/tags/$DEPLOY_TAG" >/dev/null 2>&1 || true
+printf 'deployed %s\n' "$sha"
