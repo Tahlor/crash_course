@@ -25,8 +25,10 @@ jobs:
           node --check leetcode/amazon/code_sync.js
           node --check leetcode/amazon/sw.js
           node --check sw.js
-      - name: Check state API syntax
-        run: python -m py_compile server/state_api.py
+      - name: Check backend and deploy syntax
+        run: |
+          python -m py_compile server/state_api.py
+          bash -n server/update_crash_course.sh
       - name: Check required course assets
         run: |
           test -f index.html
@@ -49,6 +51,10 @@ jobs:
           test -f leetcode/amazon/code_sync.js
           test -f leetcode/amazon/sw.js
           test -f server/state_api.py
+          test -f server/crash-course-state.service
+          test -f server/nginx-crash-course-state.conf
+          test -f server/update_crash_course.sh
+          test -f STATE_ARCHITECTURE.md
       - name: Check key navigation and sync links
         run: |
           grep -q 'href="amazon/"' leetcode/index.html
@@ -65,6 +71,8 @@ jobs:
           grep -q 'index.html?review=' leetcode/amazon/code.js
           grep -q "USER_ID='default'" leetcode/amazon/state.js
           grep -q "DEFAULT_USER_ID" server/state_api.py
+          grep -q 'CRASH_COURSE_PORT=8877' server/crash-course-state.service
+          grep -q '127.0.0.1:8877' server/nginx-crash-course-state.conf
       - name: Check offline cache coverage
         run: |
           grep -q 'state.js' leetcode/amazon/sw.js
