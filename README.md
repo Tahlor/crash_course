@@ -12,7 +12,10 @@ Courses live beneath subject folders. Company-, role-, exam-, or situation-speci
 ├── COURSE_AUTHORING.md
 ├── STATE_ARCHITECTURE.md
 ├── server/
-│   └── state_api.py           # single-user synced state API
+│   ├── state_api.py                     # single-user synced state API
+│   ├── crash-course-state.service       # systemd service for Archimedes
+│   ├── nginx-crash-course-state.conf    # same-origin API proxy
+│   └── update_crash_course.sh           # git → webroot deploy/sync
 └── leetcode/
     ├── index.html
     └── amazon/
@@ -70,7 +73,7 @@ See `COURSE_AUTHORING.md` for the reusable teaching model and `STATE_ARCHITECTUR
 
 ## Quality
 
-`.github/workflows/quality.yml` checks JavaScript syntax, the Python state API, required static assets, sync wiring, offline-cache coverage, and key navigation links on every push to `master` and on pull requests.
+`.github/workflows/quality.yml` checks JavaScript syntax, the Python state API, required static/deployment assets, sync wiring, offline-cache coverage, and key navigation links on every push to `master` and on pull requests.
 
 ## Deployment
 
@@ -88,9 +91,9 @@ Public course URL:
 https://taylorarchibald.com/projects/crash_course/leetcode/amazon/
 ```
 
-Archimedes keeps a public clone at `/home/ubuntu/crash_course_deploy`. `/home/ubuntu/update_crash_course.sh` fetches `master`, resets the clone to `origin/master`, and rsyncs it into the nginx web root. The `ubuntu` user's crontab runs this sync every 5 minutes, so pushes to public `master` propagate automatically without needing server-side GitHub credentials.
+Archimedes keeps a public clone at `/home/ubuntu/crash_course_deploy`. The versioned `server/update_crash_course.sh` is installed as `/home/ubuntu/update_crash_course.sh`; it fetches `master`, resets the clone to `origin/master`, validates the Python backend, rsyncs into the nginx web root, and restarts the state service when its code changes. The `ubuntu` user's crontab runs this sync every 5 minutes, so pushes to public `master` propagate automatically without needing server-side GitHub credentials.
 
-The course state API runs locally on Archimedes and is proxied by nginx at:
+The versioned service/proxy definitions are `server/crash-course-state.service` and `server/nginx-crash-course-state.conf`. The course state API runs locally on Archimedes and is proxied by nginx at:
 
 ```text
 https://taylorarchibald.com/projects/crash_course/api/state
@@ -100,4 +103,4 @@ It currently resolves every request to the implicit `default` user and stores pe
 
 ### GitHub Pages
 
-`.github/workflows/pages.yml` is also present, but GitHub Pages is not currently enabled at the repository level. It can remain a future static fallback; the Archimedes deployment is the active path because cross-session state requires a backend.
+`.github/workflows/pages.yml` remains as a manual-only static fallback. Archimedes is the active deployment because cross-session state requires a backend.
