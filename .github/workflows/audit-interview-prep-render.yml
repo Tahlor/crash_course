@@ -1,0 +1,74 @@
+name: Audit interview prep rendering
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser audit dependency
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Audit study guide in Chromium
+        run: |
+          cat > /tmp/audit.mjs <<'JS'
+          import { chromium } from 'playwright';
+          const base = 'https://taylorarchibald.com/projects/interview_prep/companies/amazon/study-guide/';
+          const paths = ['', '01-foundations/', '02-transformers/', '03-posttraining-rl/', '04-multimodal-generative/', '05-rag-agents-systems/', '06-evaluation-classical/', '07-modern-supplement/'];
+          const browser = await chromium.launch({headless:true});
+          let bad = false;
+          for (const width of [390, 1280]) {
+            const context = await browser.newContext({ viewport: {width, height: 844} });
+            for (const path of paths) {
+              const page = await context.newPage();
+              const consoleErrors = [];
+              const pageErrors = [];
+              const failed = [];
+              page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+              page.on('pageerror', e => pageErrors.push(String(e)));
+              page.on('response', r => { if (r.status() >= 400) failed.push(`${r.status()} ${r.url()}`); });
+              const url = base + path;
+              await page.goto(url, {waitUntil:'networkidle', timeout:60000});
+              await page.waitForTimeout(1000);
+              const stats = await page.evaluate(() => {
+                const arith = [...document.querySelectorAll('.arithmatex')];
+                const unrendered = arith.filter(n => !n.querySelector('mjx-container')).map(n => n.textContent.trim().slice(0,160));
+                const raw = [...document.querySelectorAll('main *')].filter(n => n.children.length === 0 && /\\begin\{|\\\[|\\\(|\\frac\{|\\mathbb\{|\\mathbf\{/.test(n.textContent || '')).map(n => n.textContent.trim().slice(0,160));
+                const displays = [...document.querySelectorAll('mjx-container[display="true"]')];
+                const tooWideMath = displays.filter(n => n.scrollWidth > n.clientWidth + 2).length;
+                return {
+                  title: document.title,
+                  arith: arith.length,
+                  mjx: document.querySelectorAll('mjx-container').length,
+                  matrices: document.querySelectorAll('[data-mml-node="mtable"]').length,
+                  unrendered,
+                  raw,
+                  bodyOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+                  tooWideMath,
+                  startup: document.documentElement.dataset.mathjaxStartup || null
+                };
+              });
+              console.log(JSON.stringify({width, path: path || '(index)', ...stats, consoleErrors, pageErrors, failed}, null, 2));
+              if (stats.unrendered.length || stats.raw.length || stats.mjx !== stats.arith || consoleErrors.length || pageErrors.length || stats.bodyOverflow || stats.startup !== 'v7-explicit') bad = true;
+              const file = (path || 'index').replaceAll('/','_').replace(/_$/,'');
+              await page.screenshot({path:`audit-${width}-${file}.png`, fullPage:true});
+              await page.close();
+            }
+            await context.close();
+          }
+          await browser.close();
+          if (bad) process.exit(1);
+          JS
+          node /tmp/audit.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: interview-prep-render-audit
+          path: audit-*.png
+          retention-days: 3
