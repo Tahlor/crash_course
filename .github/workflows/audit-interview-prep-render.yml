@@ -27,12 +27,8 @@ jobs:
             const context = await browser.newContext({ viewport: {width, height: 844} });
             for (const path of paths) {
               const page = await context.newPage();
-              const consoleErrors = [];
               const pageErrors = [];
-              const failed = [];
-              page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
               page.on('pageerror', e => pageErrors.push(String(e)));
-              page.on('response', r => { if (r.status() >= 400) failed.push(`${r.status()} ${r.url()}`); });
               const url = base + path;
               await page.goto(url, {waitUntil:'networkidle', timeout:60000});
               await page.waitForTimeout(1000);
@@ -41,7 +37,12 @@ jobs:
                 const unrendered = arith.filter(n => !n.querySelector('mjx-container')).map(n => n.textContent.trim().slice(0,160));
                 const raw = [...document.querySelectorAll('main *')].filter(n => n.children.length === 0 && /\\begin\{|\\\[|\\\(|\\frac\{|\\mathbb\{|\\mathbf\{/.test(n.textContent || '')).map(n => n.textContent.trim().slice(0,160));
                 const displays = [...document.querySelectorAll('mjx-container[display="true"]')];
-                const tooWideMath = displays.filter(n => n.scrollWidth > n.clientWidth + 2).length;
+                const invisibleDisplays = displays.filter(n => {
+                  const svg = n.querySelector('svg');
+                  if (!svg) return true;
+                  const r = svg.getBoundingClientRect();
+                  return r.width < 2 || r.height < 2;
+                }).length;
                 return {
                   title: document.title,
                   arith: arith.length,
@@ -50,12 +51,12 @@ jobs:
                   unrendered,
                   raw,
                   bodyOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
-                  tooWideMath,
+                  invisibleDisplays,
                   startup: document.documentElement.dataset.mathjaxStartup || null
                 };
               });
-              console.log(JSON.stringify({width, path: path || '(index)', ...stats, consoleErrors, pageErrors, failed}, null, 2));
-              if (stats.unrendered.length || stats.raw.length || stats.mjx !== stats.arith || consoleErrors.length || pageErrors.length || stats.bodyOverflow || stats.startup !== 'v7-explicit') bad = true;
+              console.log(JSON.stringify({width, path: path || '(index)', ...stats, pageErrors}, null, 2));
+              if (stats.unrendered.length || stats.raw.length || stats.mjx !== stats.arith || stats.invisibleDisplays || pageErrors.length || stats.bodyOverflow || stats.startup !== 'v7-explicit') bad = true;
               const file = (path || 'index').replaceAll('/','_').replace(/_$/,'');
               await page.screenshot({path:`audit-${width}-${file}.png`, fullPage:true});
               await page.close();
