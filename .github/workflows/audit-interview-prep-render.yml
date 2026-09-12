@@ -17,7 +17,7 @@ jobs:
           npx playwright install --with-deps chromium >/dev/null
       - name: Audit study guide in Chromium
         run: |
-          cat > /tmp/audit.mjs <<'JS'
+          cat > audit.mjs <<'JS'
           import { chromium } from 'playwright';
           const base = 'https://taylorarchibald.com/projects/interview_prep/companies/amazon/study-guide/';
           const paths = ['', '01-foundations/', '02-transformers/', '03-posttraining-rl/', '04-multimodal-generative/', '05-rag-agents-systems/', '06-evaluation-classical/', '07-modern-supplement/'];
@@ -65,7 +65,7 @@ jobs:
           await browser.close();
           if (bad) process.exit(1);
           JS
-          node /tmp/audit.mjs
+          node ./audit.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
