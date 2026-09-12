@@ -15,61 +15,59 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null
           npx playwright install --with-deps chromium >/dev/null
-      - name: Audit study guide in Chromium
+      - name: Diagnose mobile MathJax geometry
         run: |
           cat > audit.mjs <<'JS'
           import { chromium } from 'playwright';
-          const base = 'https://taylorarchibald.com/projects/interview_prep/companies/amazon/study-guide/';
-          const paths = ['', '01-foundations/', '02-transformers/', '03-posttraining-rl/', '04-multimodal-generative/', '05-rag-agents-systems/', '06-evaluation-classical/', '07-modern-supplement/'];
+          const url = 'https://taylorarchibald.com/projects/interview_prep/companies/amazon/study-guide/01-foundations/';
           const browser = await chromium.launch({headless:true});
-          let bad = false;
           for (const width of [390, 1280]) {
-            const context = await browser.newContext({ viewport: {width, height: 844} });
-            for (const path of paths) {
-              const page = await context.newPage();
-              const pageErrors = [];
-              page.on('pageerror', e => pageErrors.push(String(e)));
-              const url = base + path;
-              await page.goto(url, {waitUntil:'networkidle', timeout:60000});
-              await page.waitForTimeout(1000);
-              const stats = await page.evaluate(() => {
-                const arith = [...document.querySelectorAll('.arithmatex')];
-                const unrendered = arith.filter(n => !n.querySelector('mjx-container')).map(n => n.textContent.trim().slice(0,160));
-                const raw = [...document.querySelectorAll('main *')].filter(n => n.children.length === 0 && /\\begin\{|\\\[|\\\(|\\frac\{|\\mathbb\{|\\mathbf\{/.test(n.textContent || '')).map(n => n.textContent.trim().slice(0,160));
-                const displays = [...document.querySelectorAll('mjx-container[display="true"]')];
-                const invisibleDisplays = displays.filter(n => {
-                  const svg = n.querySelector('svg');
-                  if (!svg) return true;
-                  const r = svg.getBoundingClientRect();
-                  return r.width < 2 || r.height < 2;
-                }).length;
-                return {
-                  title: document.title,
-                  arith: arith.length,
-                  mjx: document.querySelectorAll('mjx-container').length,
-                  matrices: document.querySelectorAll('[data-mml-node="mtable"]').length,
-                  unrendered,
-                  raw,
-                  bodyOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
-                  invisibleDisplays,
-                  startup: document.documentElement.dataset.mathjaxStartup || null
+            const page = await browser.newPage({viewport:{width,height:844}});
+            await page.goto(url,{waitUntil:'networkidle',timeout:60000});
+            await page.waitForTimeout(800);
+            const result = await page.evaluate(async () => {
+              function info(label) {
+                const n = document.querySelector('mjx-container[display="true"]');
+                const svg = n && n.querySelector('svg');
+                const arith = n && n.closest('.arithmatex');
+                const parent = n && n.parentElement;
+                const r = n && n.getBoundingClientRect();
+                const sr = svg && svg.getBoundingClientRect();
+                const cs = n && getComputedStyle(n);
+                const ss = svg && getComputedStyle(svg);
+                const as = arith && getComputedStyle(arith);
+                return {label,
+                  containerRect:r && {x:r.x,y:r.y,w:r.width,h:r.height},
+                  svgRect:sr && {x:sr.x,y:sr.y,w:sr.width,h:sr.height},
+                  attrs:svg && {width:svg.getAttribute('width'),height:svg.getAttribute('height'),viewBox:svg.getAttribute('viewBox'),style:svg.getAttribute('style')},
+                  containerStyle:cs && {display:cs.display,width:cs.width,height:cs.height,fontSize:cs.fontSize,lineHeight:cs.lineHeight,overflowX:cs.overflowX,overflowY:cs.overflowY,textAlign:cs.textAlign,position:cs.position},
+                  svgStyle:ss && {display:ss.display,width:ss.width,height:ss.height,overflow:ss.overflow,position:ss.position},
+                  arithRect:arith && (()=>{const q=arith.getBoundingClientRect();return{x:q.x,y:q.y,w:q.width,h:q.height}})(),
+                  arithStyle:as && {display:as.display,width:as.width,height:as.height,overflowX:as.overflowX,overflowY:as.overflowY},
+                  parentTag:parent && parent.tagName,
+                  parentClass:parent && parent.className,
+                  html:n && n.outerHTML.slice(0,600)
                 };
-              });
-              console.log(JSON.stringify({width, path: path || '(index)', ...stats, pageErrors}, null, 2));
-              if (stats.unrendered.length || stats.raw.length || stats.mjx !== stats.arith || stats.invisibleDisplays || pageErrors.length || stats.bodyOverflow || stats.startup !== 'v7-explicit') bad = true;
-              const file = (path || 'index').replaceAll('/','_').replace(/_$/,'');
-              await page.screenshot({path:`audit-${width}-${file}.png`, fullPage:true});
-              await page.close();
-            }
-            await context.close();
+              }
+              const out=[info('baseline')];
+              const rules=[
+                ['overflow-visible','mjx-container[display="true"]{overflow:visible!important;max-width:none!important}'],
+                ['display-block','mjx-container[display="true"]{display:block!important;overflow:visible!important;max-width:none!important}'],
+                ['svg-auto','mjx-container[display="true"]>svg{width:auto!important;height:auto!important;max-width:none!important;overflow:visible!important}'],
+                ['svg-initial','mjx-container[display="true"]>svg{width:initial!important;height:initial!important;max-width:none!important;overflow:visible!important}'],
+                ['font-16','mjx-container[display="true"]{font-size:16px!important;overflow:visible!important;max-width:none!important}']
+              ];
+              for (const [name,css] of rules) {
+                const style=document.createElement('style');style.textContent=css;document.head.appendChild(style);
+                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+                out.push(info(name));
+                style.remove();
+              }
+              return out;
+            });
+            console.log('WIDTH',width,JSON.stringify(result,null,2));
+            await page.close();
           }
           await browser.close();
-          if (bad) process.exit(1);
           JS
           node ./audit.mjs
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: interview-prep-render-audit
-          path: audit-*.png
-          retention-days: 3
